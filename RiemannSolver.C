@@ -1,0 +1,253 @@
+#include <stdio.h>
+#include <math.h>
+#include "global.h"
+
+/* Local Riemann Solver
+   created on Nov. 27, 2016
+   written by Qi Li
+   Purpose: solve Local Riemman Problem of Euler Equations
+   Version:
+   1.0: 1D, pure hydro, exact Riemann solver (Nov. 27, 2016)
+   Input: WL,cL,WR,cR
+   Output: WS
+*/
+   
+int StarRegion(double *WL, double cL, double *WR, double cR, double *WS, float *G);
+int GuessPressure(double &p0,double dL,double uL,double pL,double cL,double dR,double uR,double pR,double cR,float *G);
+int PreFunc(double &fK,double &dfK,double pold,double dK,double pK,double cK,float *G);
+int Sampler(double *WL, double cL, double *WR, double cR, double *WS, float *G);
+
+int Riemann(double *WL, double cL, double *WR, double cR, double *WS){
+	int i;
+	double dL,dR,dS,uL,uR,uS,pL,pR,pS;
+	float *G;//Gamma related constants
+	// pre-compute gamma related constants
+	G = new float[8];
+	G[0] = (Gamma - 1.0)/(2.0*Gamma);
+	G[1] = (Gamma + 1.0)/(2.0*Gamma);
+	G[2] = 2.0*Gamma/(Gamma-1.0);
+	G[3] = 2.0/(Gamma - 1.0);
+	G[4] = 2.0/(Gamma + 1.0);
+	G[5] = G[0]/G[1];
+	G[6] = (Gamma - 1.0)/2.0;
+	G[7] = Gamma - 1.0;
+	// compute star-region state
+	if (StarRegion(WL,cL,WR,cR,WS,G) != SUCCESS)
+		RETURNFAIL("Failed to compute state of star regions!\n");	
+	if (Sampler(WL,cL,WR,cR,WS,G) != SUCCESS)
+		RETURNFAIL("Failed to sample the solution!\n");
+	delete[] G;
+	return SUCCESS;
+}
+
+
+int StarRegion(double *WL,double cL,double *WR,double cR,double *WS,float *G){
+	// Purpose: solve pressure and velocity in star region
+	int i;
+	double dL,dR,dS,uL,uR,uS,pL,pR,pS;
+	double change;
+	double fR,dfR,fL,dfL,du;
+	double p0,pold; // p0: initial guessed pressure
+	dL = WL[0];
+	uL = WL[1];
+	pL = WL[2];
+	dR = WR[0];
+	uR = WR[1];
+	pR = WR[2];
+	// guess initial pressure for Newton Iteration
+	if (GuessPressure(p0,dL,uL,pL,cL,dR,uR,pR,cR,G) != SUCCESS)
+		RETURNFAIL("Failed to guess initial pressure\n");
+	pold = p0;
+	du = uR - uL;
+	// Iterate to solve f = fR + fL + du = 0  for p_star
+	for (i = 0; i < RiemannIteration; i++){
+		if (PreFunc(fL,dfL,pold,dL,pL,cL,G) != SUCCESS)
+			RETURNFAIL("Failed to calculate fL of exact RS\n");
+		if (PreFunc(fR,dfR,pold,dR,pR,cR,G) != SUCCESS)
+			RETURNFAIL("Failed to calculate fR of exact RS\n");
+		pS = pold - (fL + fR + du)/(dfL + dfR);
+		change = 2.0*fabs((pS-pold)/(pS+pold));
+		if (change < TOL) break;
+		if (pS < 0) pS = TOL;
+		pold = pS;
+	}
+	if (change >= TOL)
+		printf("WARNING: Divergence in Newton Iteration!\n");
+	// compute velocity in star region
+	uS = 0.5*(uL + uR +fR -fL);
+	
+	WS[0] = 0.0; //do not solve rho for now
+	WS[1] = uS;
+	WS[2] = pS;
+	return SUCCESS;
+}
+
+int GuessPressure(double &p0,double dL,double uL,double pL,double cL,double dR,double uR,double pR,double cR,float *G){
+	/* Purpose: to provide a guess value for pressure pS in the star region.
+	The choice is made according to adaptive Riemann solver
+	using the PVRS, TRRS and TSRS approxiamet Riemann solvers. */
+	double CUP,GEL,GER,uS,pmax,pmin,pPV,pQ,pTL,pTR,Qmax,Quser;
+	Quser = 2.0;
+	// Compute guess pressure from PVRS
+	CUP = 0.25*(dL + dR)*(cL + cR);
+	pPV = 0.5*(pL + pR) + 0.5*(uL - uR)*CUP;
+	pPV = fmax(0.0,pPV);
+	pmin = fmin(pL,pR);
+	pmax = fmax(pL,pR);
+	Qmax = pmax/pmin;
+	if (Qmax <= Quser && (pmin <= pPV && pPV <= pmax)){
+	// select PVRS Riemann Solver
+		p0 = pPV;
+	}
+	else{
+		if(pPV < pmin){
+		// select two-rarefaction Riemann solver
+			pQ = pow(pL/pR,G[0]);
+			uS = (pQ*uL/cL + uR/cR + G[3]*(pQ - 1.0))/(pQ/cL + 1.0/cR);
+			pTL = 1.0 + G[6]*(uL - uS)/cL;
+			pTR = 1.0 + G[6]*(uS - uR)/cR;
+			p0 = 0.5*(pL*pow(pTL,G[2]) + pR*pow(pTR,G[2]));
+		}
+		else{
+		// select two-shock Riemann solver with PVRS as estimate
+			GEL = sqrt((G[4]/dL)/(G[5]*pL + pPV));
+			GER = sqrt((G[4]/dR)/(G[5]*pR + pPV));
+			p0 = (GEL*pL + GER*pR - (uR - uL))/(GEL + GER);
+		}
+	}
+	return SUCCESS;
+}
+
+int PreFunc(double &fK,double &dfK,double p,double dK,double pK,double cK,float *G){
+	// purpose: to evalute the pressure functions fL and fR in exact Riemann solver
+	double AK,BK,prat,qrt;
+//	printf("%f,%f,%f,%f\n",dK,pK,cK,p);
+	if (p <= pK){ // Rarefaction wave
+		prat = p/pK;
+		fK = G[3]*cK*(pow(prat,G[0]) - 1.0);
+		dfK = (1.0/(dK*cK))*pow(prat,-G[1]);
+
+	}
+	else{ // Shock wave
+		AK = G[4]/dK;
+		BK = G[5]*pK;
+		qrt = sqrt(AK/(BK+p));
+		fK = (p-pK)*qrt;
+		dfK = (1.0 - 0.5*(p-pK)/(BK+p))*qrt;
+	}
+	return SUCCESS;
+}
+
+int Sampler(double *WL,double cL,double *WR,double cR,double *WS,float *G){
+	/* purpose: to sample the solution throughout the wave pattern. Pressure pS and velocity uS in the Star Region are known.
+	Sampling is performed in terms of the ’speed’ S = x/t = 0.
+	Sampled values are density, velocity and pressure.
+	Denote S firstly refers to star region but finally refers to "solution".*/
+	double dL,dR,dS,uL,uR,uS,pL,pR,pS;
+	double SHL,STL,SHR,STR,SL,SR,cS;
+	double C,pSL,pSR;
+	dL = WL[0];
+	uL = WL[1];
+	pL = WL[2];
+	dR = WR[0];
+	uR = WR[1];
+	pR = WR[2];
+	uS = WS[1];
+	pS = WS[2];
+	// sampling
+	if (0.0 <= uS){ 
+	// Supcase 1: Left wave
+		if (pS > pL){
+		// Case 1: Left shock
+			pSL = pS/pL;
+			SL = uL - cL*sqrt(G[1]*pSL + G[0]);
+			if (0.0 <= SL){
+			// subcase 1: sampled point is left data state
+				WS[0] = WL[0];
+				WS[1] = WL[1];
+				WS[2] = WL[2];
+			}
+			else{
+			// subcase 2: sampled point is star left state
+				WS[0] = dL*(pSL + G[5])/(pSL*G[5] + 1.0);
+				WS[1] = uS;
+				WS[2] = pS;
+			}
+		}
+		else{
+		// Case 2: Left rarefaction
+			SHL = uL - cL;
+			if (0.0 <= SHL){
+			// subcase 1: sampled point is left data state
+				WS[0] = WL[0];
+				WS[1] = WL[1];
+				WS[2] = WL[2];
+			}
+			else{
+				cS = cL*pow(pS/pL,G[0]);
+				STL = uS - cS;
+				if (0.0 > STL){
+				// subcase 2: sampled point is star left state
+					WS[0] = dL*pow(pS/pL,1.0/Gamma);
+					WS[1] = uS;
+					WS[2] = pS;
+				}
+				else{
+				// subcase 3: sampled point is inside left fan
+					WS[1] = G[4]*(cL + G[6]*uL);
+					C = G[4]*(cL + G[6]*uL);
+					WS[0] = dL*pow(C/cL,G[3]);
+					WS[2] = pL*pow(C/cL,G[2]);
+				}
+			}
+		}
+	}
+	else{
+	// Supcase 2: Right wave
+		if (pS > pR){
+		// Case 1: Right shock
+			pSR = pS/pR;
+			SR = uR + cR*sqrt(G[1]*pSR + G[0]);
+			if (0.0 >= SR){
+			// subcase 1: sampled point is right data state
+				WS[0] = WR[0];
+				WS[1] = WR[1];
+				WS[2] = WR[2];
+			}
+			else{
+			// subcase 2: sampled point is star right state
+				WS[0] = dR*(pSR + G[5])/(pSR*G[5] + 1.0);
+				WS[1] = uS;
+				WS[2] = pS;
+			}
+		}
+		else{
+		// Case 2: Right rarefaction
+			SHR = uR + cR;
+			if (0.0 >= SHR){
+			// subcase 1: sampled point is right data state
+				WS[0] = WR[0];
+				WS[1] = WR[1];
+				WS[2] = WR[2];
+			}
+			else{
+				cS = cR*pow(pS/pR,G[0]);
+				STR = uS + cS;
+				if (0.0 <= STR){
+				// subcase 2: sampled point is star right state
+					WS[0] = dR*pow(pS/pR,1.0/Gamma);
+					WS[1] = uS;
+					WS[2] = pS;
+				}
+				else{
+				// subcase 3: sampled point is inside right fan
+					WS[1] = G[4]*(-cR + G[6]*uR);
+					C = G[4]*(cR - G[6]*uR);
+					WS[0] = dR*pow(C/cR,G[3]);
+					WS[2] = pR*pow(C/cR,G[2]);
+				}
+			}
+		}
+	}
+	return SUCCESS;
+}

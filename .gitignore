@@ -1,0 +1,5 @@
+*.eps
+*.out
+*.o
+*.par
+output.txt

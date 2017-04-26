@@ -1,0 +1,33 @@
+/* Problem paprameters */
+ProblemType = 2
+
+/* Top grid parameters */
+GridRank = 1
+GridDimension = 1000
+NumberofGhostZones = 1
+
+/* data field index */
+DensNum = 0;
+TENum = 1;
+GENum = 2;
+Vel1Num = 3;
+
+/* Units [cgs] */
+LengthUnit = 1.0
+TimeUnit = 1.0
+DensityUnit = 1.0
+
+/* Hydrodynamics parameter */
+Solver = 1
+RiemannIteration = 20
+BoundaryCondition = 1
+
+/* Thermal dynamics parameter */
+EOSType = 1
+Gamma = 1.4
+Mu = 0.6
+
+/* Time step */
+CourantNumber = 0.4
+StopTime = 0.25
+StopCycle = 1000000
