@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 
 Gamma = 1.4
-data = np.loadtxt("Output.txt")
+data = np.loadtxt("output.txt")
 data2 = np.loadtxt("riemann.data");
 x = np.arange(1,data.shape[0]+1)*1.0/data.shape[0]
 x2 = np.arange(1,data2.shape[0]+1)*1.0/data2.shape[0]
