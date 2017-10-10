@@ -1,0 +1,8 @@
+OBJECTS = \
+		  Godunov.o \
+		  Grid_Output.o \
+		  SetGlobalValue.o \
+		  EOS.o \
+		  Grid_Initialize.o \
+		  RiemannSolver.o \
+		  main.o \

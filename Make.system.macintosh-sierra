@@ -1,0 +1,10 @@
+#=======================================================
+# SUMMARY: system-dependent settings for Makefile
+# AUTHOR: Qi Li (pg3552@ufl.edu)
+# DATE: 2017-10-09
+#=======================================================
+
+# compiler settings
+CXX = g++
+CC = gcc
+OPT = -Wall -g
