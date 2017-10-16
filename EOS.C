@@ -1,11 +1,16 @@
 #include <math.h>
 #include <stdio.h>
 #include "global.h"
+#include "grid.h"
+
+//EOS's relation with grid is a bit messy! improbe it!
 
 int EOS(double *d,double *e, double *p,double *cs){// Only support ideal gas for now
-	int i,j,k;
+	int i,size=1;
+	for (i = 0; i < Grid.GridRank; i++)
+		size *= Grid.GridDimension[i] + 2*Grid.NumberofGhostZones;
 	if (EOSType == 1){ // ideal gas
-		for (i = NumberofGhostZones; i < GridDimension + NumberofGhostZones; i++){
+		for (i = 0; i < size; i++){
 			p[i] = e[i]*(Gamma-1);
 			cs[i] = sqrt(Gamma*p[i]/d[i]);
 		}

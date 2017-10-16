@@ -8,34 +8,38 @@
 #include <stdio.h>
 #include <math.h>
 #include "global.h"
+#include "grid.h"
 #include "EOS.h"
 
 
-int Boundary(double *d, double *E, double *e, double *u, double *p, double *cs, double **U);
-int TimeStep(double dx, double time, double *u, double *cs, double &dt);
-int Flux(double *d, double *E, double *e, double *u, double *p, double *cs, double **U, double **F);
-int Update(double dx, double dt, double *d, double *E, double *e, double *u, double *p, double *cs, double **U, double **F);
+int Boundary(double *d, double *E, double *e, double *u, double *p, double *cs, double **U,int GridRank,int* GridDimension,int NumberofGhostZones);
+int TimeStep(double dx, double time, double *u, double *cs, double &dt,int GridRank,int* GridDimension,int NumberofGhostZones);
+int Flux(double *d, double *E, double *e, double *u, double *p, double *cs, double **U, double **F,int GridRank,int* GridDimension,int NumberofGhostZones);
+int Update(double dx, double dt, double *d, double *E, double *e, double *u, double *p, double *cs, double **U, double **F,int GridRank,int* GridDimension,int NumberofGhostZones);
 int Riemann(double *WL, double cL, double *WR, double cR, double *WS);
-int Output();
 
-int GodunovSolver(){
-	int i,size = GridDimension + 2*NumberofGhostZones;
-	double time = 0.0,dt,dx = LengthUnit/GridDimension;
+int grid::GodunovSolver(){
+	/* Godunov Solver, currently only 1st order, 1 D*/
+	/* Next step: use more storage-efficient data structure, i.e. use alias to some array rather than copy the array*/
+	int i,size = 1;
+	double time = 0.0,dt,dx = LengthUnit/GridDimension[0];
 	double *d,*E,*e,*u,*p,*cs;
 	double **U,**F;
+	for (i = 0; i < GridRank; i++)
+		size *= GridDimension[i] + 2*NumberofGhostZones;
 	d = new double[size];
 	E = new double[size];
 	e = new double[size];
 	u = new double[size];
 	p = new double[size];
 	cs = new double[size];
-	U = new double*[GridRank*3];
+	U = new double*[GridRank*3]; //Note: GridRank *3 only valid for 1D... will improve later
 	F = new double*[GridRank*3];
 	for (i = 0; i < GridRank*3; i++){
 		U[i] = new double[size];
 		F[i] = new double[size];
 	}
-	for (i = NumberofGhostZones; i < GridDimension +  NumberofGhostZones; i++){
+	for (i = NumberofGhostZones; i < GridDimension[0] +  NumberofGhostZones; i++){
 		d[i] = Grid[DensNum][i];
 		E[i] = Grid[TENum][i];
 		e[i] = Grid[GENum][i];
@@ -51,17 +55,17 @@ int GodunovSolver(){
 		RETURNFAIL("Unable to calculate p and cs from d and e!\n");
 	for (i = 0; i < StopCycle; i++){
 		// Set boundary conditions
-		if (Boundary(d,E,e,u,p,cs,U) != SUCCESS)
+		if (Boundary(d,E,e,u,p,cs,U,GridRank,GridDimension,NumberofGhostZones) != SUCCESS)
 			RETURNFAIL("Failed to apply boundary condition!\n");
 		// CFL-based condition
-		if (TimeStep(dx,time,u,cs,dt) != SUCCESS)
+		if (TimeStep(dx,time,u,cs,dt,GridRank,GridDimension,NumberofGhostZones) != SUCCESS)
 			RETURNFAIL("Failed to compute time step!\n");
 		time += dt;
 		printf("cycle = %d, dt = %f, t = %f\n",i+1,dt,time);
 		// compute intercell numerical flux
-		if (Flux(d,E,e,u,p,cs,U,F) != SUCCESS)
+		if (Flux(d,E,e,u,p,cs,U,F,GridRank,GridDimension,NumberofGhostZones) != SUCCESS)
 			RETURNFAIL("Failed to compute time step!\n");
-		if (Update(dx,dt,d,E,e,u,p,cs,U,F) != SUCCESS)
+		if (Update(dx,dt,d,E,e,u,p,cs,U,F,GridRank,GridDimension,NumberofGhostZones) != SUCCESS)
 			RETURNFAIL("Failed to update state!\n");
 		if (EOS(d,e,p,cs) != SUCCESS)
 			RETURNFAIL("Unable to calculate p and cs from d and e!\n");
@@ -85,12 +89,12 @@ int GodunovSolver(){
 	printf("Computation complete!\n");
 	return SUCCESS;
 }
-int Boundary(double *d, double *E, double *e, double *u, double *p, double *cs, double **U){
+int Boundary(double *d, double *E, double *e, double *u, double *p, double *cs, double **U,int GridRank,int* GridDimension,int NumberofGhostZones){
 	/* Purpose: set boundary conditions
 	   1 - outflow
 	   2 - reflect (currently not supported)
 	*/
-	int i,j,k,n,rear = GridDimension + NumberofGhostZones -1;
+	int i,n,rear = GridDimension[0] + NumberofGhostZones -1;
 	if (BoundaryCondition == 1){//outflow
 		for (i = 0; i < NumberofGhostZones; i++){
 			d[i] = d[NumberofGhostZones];
@@ -102,7 +106,7 @@ int Boundary(double *d, double *E, double *e, double *u, double *p, double *cs, 
 			for (n = 0; n < GridRank*3; n++)
 				U[n][i] = U[n][NumberofGhostZones];
 		}
-		for (i = GridDimension + NumberofGhostZones; i < GridDimension + 2*NumberofGhostZones; i++){
+		for (i = GridDimension[0] + NumberofGhostZones; i < GridDimension[0] + 2*NumberofGhostZones; i++){
 			d[i] = d[rear];
 			E[i] = E[rear];
 			e[i] = e[rear];
@@ -118,8 +122,8 @@ int Boundary(double *d, double *E, double *e, double *u, double *p, double *cs, 
 	return SUCCESS;
 }
 
-int TimeStep(double dx, double time, double *u, double *cs, double &dt){
-	int i,size = GridDimension + 2*NumberofGhostZones;
+int TimeStep(double dx, double time, double *u, double *cs, double &dt,int GridRank,int* GridDimension,int NumberofGhostZones){
+	int i,size = GridDimension[0] + 2*NumberofGhostZones;
 	double Smax = TINY;
 	for (i = 0; i < size; i++)
 		Smax = fmax(Smax,fabs(u[i]) + cs[i]);
@@ -129,9 +133,9 @@ int TimeStep(double dx, double time, double *u, double *cs, double &dt){
 	return SUCCESS;
 }
 
-int Flux(double *d, double *E, double *e, double *u, double *p, double *cs, double **U, double **F){
-	int i,j,k,size = GridDimension + 2*NumberofGhostZones - 1;
-	double *WL,*WR,*WS,*UL,*UR;// W = [d,u,p]
+int Flux(double *d, double *E, double *e, double *u, double *p, double *cs, double **U, double **F,int GridRank,int* GridDimension,int NumberofGhostZones){
+	int i,size = GridDimension[0] + 2*NumberofGhostZones - 1;
+	double *WL,*WR,*WS;// W = [d,u,p]
 	double dS,uS,pS,eS,ES,cS,cL,cR;
 	WL = new double[3];
 	WR = new double[3];
@@ -163,10 +167,10 @@ int Flux(double *d, double *E, double *e, double *u, double *p, double *cs, doub
 	return SUCCESS;
 }
 
-int Update(double dx, double dt, double *d, double *E, double *e, double *u, double *p, double *cs, double **U, double **F){
+int Update(double dx, double dt, double *d, double *E, double *e, double *u, double *p, double *cs, double **U, double **F,int GridRank,int* GridDimension,int NumberofGhostZones){
 	int i,j,k,n;
 	double dtodx = dt/dx;
-	for (i = NumberofGhostZones; i < GridDimension + NumberofGhostZones; i++){
+	for (i = NumberofGhostZones; i < GridDimension[0] + NumberofGhostZones; i++){
 		for (n = 0; n < GridRank*3; n++)
 			U[n][i] = U[n][i] + dtodx*(F[n][i-1] - F[n][i]);
 		d[i] = U[0][i];

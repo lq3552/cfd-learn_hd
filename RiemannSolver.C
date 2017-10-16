@@ -18,8 +18,6 @@ int PreFunc(double &fK,double &dfK,double pold,double dK,double pK,double cK,flo
 int Sampler(double *WL, double cL, double *WR, double cR, double *WS, float *G);
 
 int Riemann(double *WL, double cL, double *WR, double cR, double *WS){
-	int i;
-	double dL,dR,dS,uL,uR,uS,pL,pR,pS;
 	float *G;//Gamma related constants
 	// pre-compute gamma related constants
 	G = new float[8];
@@ -44,7 +42,7 @@ int Riemann(double *WL, double cL, double *WR, double cR, double *WS){
 int StarRegion(double *WL,double cL,double *WR,double cR,double *WS,float *G){
 	// Purpose: solve pressure and velocity in star region
 	int i;
-	double dL,dR,dS,uL,uR,uS,pL,pR,pS;
+	double dL,dR,uL,uR,uS,pL,pR,pS;
 	double change;
 	double fR,dfR,fL,dfL,du;
 	double p0,pold; // p0: initial guessed pressure
@@ -143,7 +141,7 @@ int Sampler(double *WL,double cL,double *WR,double cR,double *WS,float *G){
 	Sampling is performed in terms of the ’speed’ S = x/t = 0.
 	Sampled values are density, velocity and pressure.
 	Denote S firstly refers to star region but finally refers to "solution".*/
-	double dL,dR,dS,uL,uR,uS,pL,pR,pS;
+	double dL,dR,uL,uR,uS,pL,pR,pS;
 	double SHL,STL,SHR,STR,SL,SR,cS;
 	double C,pSL,pSR;
 	dL = WL[0];

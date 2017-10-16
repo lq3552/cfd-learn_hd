@@ -1,8 +1,10 @@
 OBJECTS = \
-		  Godunov.o \
-		  Grid_Output.o \
-		  SetGlobalValue.o \
-		  EOS.o \
-		  Grid_Initialize.o \
-		  RiemannSolver.o \
-		  main.o \
+	EOS.o\
+	SetParameter.o\
+	InitializeNew.o\
+	Grid_AllocateGrid.o\
+	Grid_Godunov.o\
+	RiemannSolver.o\
+	Grid_Output.o\
+	main.o\
+	Grid_Initialize.o

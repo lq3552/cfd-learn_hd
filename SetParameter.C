@@ -4,28 +4,23 @@
 
 #include <stdio.h>
 #include "global.h"
+#include "grid.h"
 
 /* global type declaration*/
 
 /* Problem parameters  */
 int ProblemType = 5;
 
-/* Top grid parameters */
-int GridRank = 1;
-int GridDimension = 1000;
-int NumberofGhostZones = 1;
-double **Grid;
-
-/* data field index */
-int DensNum = 0;
-int TENum = 1;
-int GENum = 2;
-int Vel1Num = 3;
-
 /* Units [cgs] */
 double LengthUnit = 1;
 double TimeUnit = 1;
 double DensityUnit = 1;
+
+/* Field Index */
+int DensNum = 0;  
+int TENum = 1; 
+int GENum = 2; 
+int Vel1Num = 3;
 
 /* Hydrodynamics parameter */
 int Solver = 1;//1: Godunov 1st order
@@ -46,24 +41,32 @@ int StopCycle = 1000000;
 char* DataDump;
 double dtDump;
 
-int SetGlobalValue(FILE* fptr){
+int SetParameter(FILE* fptr){
 	// future develop: identify optional/compelling parameters, comment, dummy space
 	char line[MAX_LINE_LENGTH];
-	int i,dim,ret,int_dummy;
-	double TempFloat,float_dummy;
+	int ret;
 	int comment_count = 0;
+	
+	/* Default Top grid parameters*/
+	int GridRank = 1;
+	int GridDimension[MAX_DIMENSION] = {0};
+	int NumberofGhostZones = 1;
+	int NumberofBaryonFields = 4;
+
 	rewind(fptr);
 	while ((fgets(line, MAX_LINE_LENGTH,fptr) != NULL) && (comment_count<2)){
 		ret = 0;
 		/* read parameters */
 		ret += sscanf(line,"ProblemType = %d",&ProblemType);
 		ret += sscanf(line,"GridRank = %d",&GridRank);
-		ret += sscanf(line,"GridDimension = %d",&GridDimension);
+		if (GridRank == 1)
+			ret += sscanf(line,"GridDimension = %d",&GridDimension[0]);
+		else if (GridRank == 2)
+			ret += sscanf(line,"GridDimension = %d %d",&GridDimension[0],&GridDimension[1]);
+		else
+			ret += sscanf(line,"GridDimension = %d %d %d",&GridDimension[0],&GridDimension[1],&GridDimension[2]);
 		ret += sscanf(line,"NumberofGhostZones = %d",&NumberofGhostZones);
-		ret += sscanf(line,"DensNum = %d",&DensNum);
-		ret += sscanf(line,"TENum = %d",&TENum);
-		ret += sscanf(line,"GENum = %d",&GENum);
-		ret += sscanf(line,"Vel1Num = %d",&Vel1Num);
+		ret += sscanf(line,"NumberofBaryonFields = %d",&NumberofBaryonFields);
 		ret += sscanf(line,"LengthUnit = %lf",&LengthUnit);
 		ret += sscanf(line,"TimeUnit = %lf",&TimeUnit);
 		ret += sscanf(line,"DensityUnit = %lf",&DensityUnit);
@@ -78,5 +81,15 @@ int SetGlobalValue(FILE* fptr){
 		ret += sscanf(line,"StopTime = %lf",&StopTime);
 		ret += sscanf(line,"StopCycle = %d",&StopCycle);
 	}
+	Grid.SetMetaData(GridRank,GridDimension,NumberofGhostZones,NumberofBaryonFields);
 	return SUCCESS;
+}
+
+void grid::SetMetaData(int m_GridRank,int m_GridDimension[MAX_DIMENSION],int m_NumberofGhostZones,int m_NumberofBaryonFields){
+	int i;
+	GridRank = m_GridRank;
+	for (i = 0; i < GridRank; i++)
+		GridDimension[i] = m_GridDimension[i];
+	NumberofGhostZones = m_NumberofGhostZones;
+	NumberofBaryonFields = m_NumberofBaryonFields;
 }

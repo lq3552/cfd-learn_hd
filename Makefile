@@ -27,16 +27,30 @@ EXE = Hydro.exe
 
 CXX = g++
 CC = gcc
-OPT = -Wall -g # debug, need to study further
+OPTIMIZE = -Wall -g #study further
+OPTION = -Wall -c
 
 include Make.config.system
 ifeq ($(SYSTYPE),"macintosh-sierra")
-  include Make.system.macintosh-sierra
+  SYSFILE = Make.system.macintosh-sierra
+  include $(SYSFILE)
 endif
 
+# Generate an executable
 $(EXE): $(OBJECTS)
-	$(CXX) $(OPT) $(OBJECTS) -o $(EXE)
+	$(CXX) $(OPTIMIZE) $(OBJECTS) -o $(EXE)
 
 
+# show system
+show-sys: $(SYSFILE)
+	@echo "System type: $(SYSTYPE)"
+
+
+# Implicit rules
+%.o : %.C
+	$(CXX) $(OPTION) $< -o $@
+
+
+# Clean
 clean:
 	rm -f $(OBJECTS) $(EXE)
