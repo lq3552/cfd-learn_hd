@@ -5,12 +5,7 @@ ProblemType = 2
 GridRank = 1
 GridDimension = 1000
 NumberofGhostZones = 1
-
-/* data field index */
-DensNum = 0;
-TENum = 1;
-GENum = 2;
-Vel1Num = 3;
+NumberofBaryonFields = 4
 
 /* Units [cgs] */
 LengthUnit = 1.0
@@ -18,7 +13,8 @@ TimeUnit = 1.0
 DensityUnit = 1.0
 
 /* Hydrodynamics parameter */
-Solver = 1
+Solver = 0
+RiemannSolver = 0
 RiemannIteration = 20
 BoundaryCondition = 1
 

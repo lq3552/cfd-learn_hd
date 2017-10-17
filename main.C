@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include "global.h"
+#include "typedefs.h"
 #include "grid.h"
 
 int SetParameter(FILE *fptr);
@@ -27,7 +28,7 @@ int main(int argc, char *argv[]){
 	Grid.PrintMetaData();
 	if (InitializeNew() != SUCCESS)
 		RETURNFAIL("ERROR: failed to initialize problem!\n");
-	if (Solver == 1){
+	if (Solver == HD){
 		if (Grid.GodunovSolver() != SUCCESS)
 			RETURNFAIL("ERROR: failure in Godunov solver!\n");
 	}

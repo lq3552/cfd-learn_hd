@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include "global.h"
+#include "typedefs.h"
 #include "grid.h"
 
 /* global type declaration*/
@@ -23,9 +24,10 @@ int GENum = 2;
 int Vel1Num = 3;
 
 /* Hydrodynamics parameter */
-int Solver = 1;//1: Godunov 1st order
+int Solver = HD;//1: Godunov 1st order
+int RiemannSolver = exact;
 int RiemannIteration = 20;
-int BoundaryCondition = 1; //1: outflow
+int BoundaryCondition = outflow; //1: outflow
 
 /* Thermal dynamics parameter */
 int EOSType = 1;
@@ -72,6 +74,7 @@ int SetParameter(FILE* fptr){
 		ret += sscanf(line,"DensityUnit = %lf",&DensityUnit);
 		/* Hydro -related parameter */
 		ret += sscanf(line,"Solver = %d",&Solver);
+		ret += sscanf(line,"RiemannSolver = %d",&RiemannSolver);
 		ret += sscanf(line,"RiemannIteration = %d",&RiemannIteration);
 		ret += sscanf(line,"BoundaryCondition = %d",&BoundaryCondition);
 		ret += sscanf(line,"EOSType = %d",&EOSType);

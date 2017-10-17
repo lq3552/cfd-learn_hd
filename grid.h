@@ -1,12 +1,4 @@
-#define SUCCESS 0
-#define FAIL 1
-#define TINY 1e-16
-#define RETURNFAIL(x) {printf("%s",x);return FAIL;}
-#define TOL 1e-6
-#define MAX_LINE_LENGTH 100
-
-// In the final stage you'll change this to a format like enzo class, but now it's process-oriented :(
-
+/*Define the grid class which holds the computation domain and the relevant solver*/
 
 class grid{
 

@@ -2,6 +2,8 @@ OBJECTS = \
 	EOS.o\
 	SetParameter.o\
 	InitializeNew.o\
+	Boundary.o\
+	TimeStep.o\
 	Grid_AllocateGrid.o\
 	Grid_Godunov.o\
 	RiemannSolver.o\

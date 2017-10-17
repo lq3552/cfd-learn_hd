@@ -13,6 +13,7 @@ extern int ProblemType;
 extern double LengthUnit,TimeUnit,DensityUnit;
 
 /* Field Index */
+// the current setup is dangerous, because it is possible to change those values somewhere except for initialization
 extern int DensNum;  
 extern int TENum; 
 extern int GENum; 
@@ -20,6 +21,7 @@ extern int Vel1Num;
 
 /* Hydrodynamics parameter */
 extern int Solver;
+extern int RiemannSolver;
 extern int RiemannIteration;
 extern int BoundaryCondition;
 

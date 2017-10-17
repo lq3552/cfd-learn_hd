@@ -1,5 +1,7 @@
 *.eps
 *.out
+*.exe
 *.o
 *.par
 output.txt
+riemann.data

@@ -8,15 +8,10 @@
 #include <stdio.h>
 #include <math.h>
 #include "global.h"
+#include "typedefs.h"
 #include "grid.h"
+#include "proto.h"
 #include "EOS.h"
-
-
-int Boundary(double *d, double *E, double *e, double *u, double *p, double *cs, double **U,int GridRank,int* GridDimension,int NumberofGhostZones);
-int TimeStep(double dx, double time, double *u, double *cs, double &dt,int GridRank,int* GridDimension,int NumberofGhostZones);
-int Flux(double *d, double *E, double *e, double *u, double *p, double *cs, double **U, double **F,int GridRank,int* GridDimension,int NumberofGhostZones);
-int Update(double dx, double dt, double *d, double *E, double *e, double *u, double *p, double *cs, double **U, double **F,int GridRank,int* GridDimension,int NumberofGhostZones);
-int Riemann(double *WL, double cL, double *WR, double cR, double *WS);
 
 int grid::GodunovSolver(){
 	/* Godunov Solver, currently only 1st order, 1 D*/
@@ -58,14 +53,14 @@ int grid::GodunovSolver(){
 		if (Boundary(d,E,e,u,p,cs,U,GridRank,GridDimension,NumberofGhostZones) != SUCCESS)
 			RETURNFAIL("Failed to apply boundary condition!\n");
 		// CFL-based condition
-		if (TimeStep(dx,time,u,cs,dt,GridRank,GridDimension,NumberofGhostZones) != SUCCESS)
+		if (Hydro_TimeStep(dx,time,u,cs,dt,GridRank,GridDimension,NumberofGhostZones) != SUCCESS)
 			RETURNFAIL("Failed to compute time step!\n");
 		time += dt;
 		printf("cycle = %d, dt = %f, t = %f\n",i+1,dt,time);
 		// compute intercell numerical flux
 		if (Flux(d,E,e,u,p,cs,U,F,GridRank,GridDimension,NumberofGhostZones) != SUCCESS)
 			RETURNFAIL("Failed to compute time step!\n");
-		if (Update(dx,dt,d,E,e,u,p,cs,U,F,GridRank,GridDimension,NumberofGhostZones) != SUCCESS)
+		if (Hydro_Update(dx,dt,d,E,e,u,p,cs,U,F,GridRank,GridDimension,NumberofGhostZones) != SUCCESS)
 			RETURNFAIL("Failed to update state!\n");
 		if (EOS(d,e,p,cs) != SUCCESS)
 			RETURNFAIL("Unable to calculate p and cs from d and e!\n");
@@ -87,49 +82,6 @@ int grid::GodunovSolver(){
 	delete[] U;
 	delete[] F;
 	printf("Computation complete!\n");
-	return SUCCESS;
-}
-int Boundary(double *d, double *E, double *e, double *u, double *p, double *cs, double **U,int GridRank,int* GridDimension,int NumberofGhostZones){
-	/* Purpose: set boundary conditions
-	   1 - outflow
-	   2 - reflect (currently not supported)
-	*/
-	int i,n,rear = GridDimension[0] + NumberofGhostZones -1;
-	if (BoundaryCondition == 1){//outflow
-		for (i = 0; i < NumberofGhostZones; i++){
-			d[i] = d[NumberofGhostZones];
-			E[i] = E[NumberofGhostZones];
-			e[i] = e[NumberofGhostZones];
-			u[i] = u[NumberofGhostZones];
-			p[i] = p[NumberofGhostZones];
-			cs[i] = cs[NumberofGhostZones];
-			for (n = 0; n < GridRank*3; n++)
-				U[n][i] = U[n][NumberofGhostZones];
-		}
-		for (i = GridDimension[0] + NumberofGhostZones; i < GridDimension[0] + 2*NumberofGhostZones; i++){
-			d[i] = d[rear];
-			E[i] = E[rear];
-			e[i] = e[rear];
-			u[i] = u[rear];
-			p[i] = p[rear];
-			cs[i] = cs[rear];
-			for (n = 0; n < GridRank*3; n++)
-				U[n][i] = U[n][rear];
-		}
-	}
-	else
-		RETURNFAIL("Unsupported boundary condition type!\n");
-	return SUCCESS;
-}
-
-int TimeStep(double dx, double time, double *u, double *cs, double &dt,int GridRank,int* GridDimension,int NumberofGhostZones){
-	int i,size = GridDimension[0] + 2*NumberofGhostZones;
-	double Smax = TINY;
-	for (i = 0; i < size; i++)
-		Smax = fmax(Smax,fabs(u[i]) + cs[i]);
-	dt = CourantNumber*dx/Smax;
-	if (time + dt > StopTime)
-		dt = StopTime - time;
 	return SUCCESS;
 }
 
@@ -167,7 +119,7 @@ int Flux(double *d, double *E, double *e, double *u, double *p, double *cs, doub
 	return SUCCESS;
 }
 
-int Update(double dx, double dt, double *d, double *E, double *e, double *u, double *p, double *cs, double **U, double **F,int GridRank,int* GridDimension,int NumberofGhostZones){
+int Hydro_Update(double dx, double dt, double *d, double *E, double *e, double *u, double *p, double *cs, double **U, double **F,int GridRank,int* GridDimension,int NumberofGhostZones){
 	int i,j,k,n;
 	double dtodx = dt/dx;
 	for (i = NumberofGhostZones; i < GridDimension[0] + NumberofGhostZones; i++){
