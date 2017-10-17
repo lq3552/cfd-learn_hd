@@ -22,10 +22,10 @@ int grid::GodunovSolver(){
 	double **U,**F;
 	for (i = 0; i < GridRank; i++)
 		size *= GridDimension[i] + 2*NumberofGhostZones;
-	d = new double[size];
-	E = new double[size];
-	e = new double[size];
-	u = new double[size];
+	d = Grid[DensNum];
+	E = Grid[TENum];
+	e = Grid[GENum];
+	u = Grid[Vel1Num];
 	p = new double[size];
 	cs = new double[size];
 	U = new double*[GridRank*3]; //Note: GridRank *3 only valid for 1D... will improve later
@@ -35,10 +35,6 @@ int grid::GodunovSolver(){
 		F[i] = new double[size];
 	}
 	for (i = NumberofGhostZones; i < GridDimension[0] +  NumberofGhostZones; i++){
-		d[i] = Grid[DensNum][i];
-		E[i] = Grid[TENum][i];
-		e[i] = Grid[GENum][i];
-		u[i] = Grid[Vel1Num][i];
 		U[0][i] = d[i];
 		U[1][i] = d[i]*u[i];
 		U[2][i] = E[i];
@@ -73,10 +69,6 @@ int grid::GodunovSolver(){
 		Grid[Vel1Num][i] = u[i];
 	}
 	// clean up
-	delete[] d;
-	delete[] E;
-	delete[] e;
-	delete[] u;
 	delete[] p;
 	delete[] cs;
 	delete[] U;
