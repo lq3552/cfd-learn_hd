@@ -3,11 +3,15 @@
    create date : Nov. 30, 2016*/
 
 #include <stdio.h>
-#include "global.h"
+#include "Global.h"
 #include "typedefs.h"
-#include "grid.h"
+#include "Grid.h"
 
-/* global type declaration*/
+/* Field Index */
+int DensNum = 0;  
+int TENum = 1; 
+int GENum = 2; 
+int Vel1Num = 3;
 
 /* Problem parameters  */
 int ProblemType = 5;
@@ -17,17 +21,11 @@ double LengthUnit = 1;
 double TimeUnit = 1;
 double DensityUnit = 1;
 
-/* Field Index */
-int DensNum = 0;  
-int TENum = 1; 
-int GENum = 2; 
-int Vel1Num = 3;
-
 /* Hydrodynamics parameter */
 int Solver = HD;//1: Godunov 1st order
-int RiemannSolver = exact;
+int RiemannSolver = Exact;
 int RiemannIteration = 20;
-int BoundaryCondition = outflow; //1: outflow
+int BoundaryCondition = Outflow; //1: outflow
 
 /* Thermal dynamics parameter */
 int EOSType = 1;
@@ -43,10 +41,11 @@ int StopCycle = 1000000;
 char* DataDump;
 double dtDump;
 
-int SetParameter(FILE* fptr){
-	// future develop: identify optional/compelling parameters, comment, dummy space
+int SetParameter(Grid &grid, FILE* fptr)
+{
+	// future development: identify optional/compelling parameters, comment, dummy space
 	char line[MAX_LINE_LENGTH];
-	int ret;
+	int ret = 1;
 	int comment_count = 0;
 	
 	/* Default Top grid parameters*/
@@ -56,7 +55,8 @@ int SetParameter(FILE* fptr){
 	int NumberofBaryonFields = 4;
 
 	rewind(fptr);
-	while ((fgets(line, MAX_LINE_LENGTH,fptr) != NULL) && (comment_count<2)){
+	while ((fgets(line, MAX_LINE_LENGTH,fptr) != NULL) && ret && (comment_count<2))
+	{
 		ret = 0;
 		/* read parameters */
 		ret += sscanf(line,"ProblemType = %d",&ProblemType);
@@ -84,15 +84,6 @@ int SetParameter(FILE* fptr){
 		ret += sscanf(line,"StopTime = %lf",&StopTime);
 		ret += sscanf(line,"StopCycle = %d",&StopCycle);
 	}
-	Grid.SetMetaData(GridRank,GridDimension,NumberofGhostZones,NumberofBaryonFields);
+	grid.SetMetaData(GridRank, GridDimension, NumberofGhostZones, NumberofBaryonFields);
 	return SUCCESS;
-}
-
-void grid::SetMetaData(int m_GridRank,int m_GridDimension[MAX_DIMENSION],int m_NumberofGhostZones,int m_NumberofBaryonFields){
-	int i;
-	GridRank = m_GridRank;
-	for (i = 0; i < GridRank; i++)
-		GridDimension[i] = m_GridDimension[i];
-	NumberofGhostZones = m_NumberofGhostZones;
-	NumberofBaryonFields = m_NumberofBaryonFields;
 }

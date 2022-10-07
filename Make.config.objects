@@ -1,12 +1,10 @@
 OBJECTS = \
 	EOS.o\
 	SetParameter.o\
-	InitializeNew.o\
-	Boundary.o\
-	TimeStep.o\
-	Grid_AllocateGrid.o\
+	Grid_GridInitializer.o\
+	Grid_SetBoundary.o\
+	Grid_TimeStep.o\
 	Grid_Godunov.o\
+	Grid_IO.o\
 	RiemannSolver.o\
-	Grid_Output.o\
 	main.o\
-	Grid_Initialize.o

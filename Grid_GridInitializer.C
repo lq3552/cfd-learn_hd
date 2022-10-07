@@ -1,9 +1,54 @@
-#include <math.h>
-#include <stdio.h>
-#include "global.h"
-#include "grid.h"
+/* Methods for initialization of grid data */
+
+#include "Global.h"
+#include "Grid.h"
 #include "EOS.h"
 
+Grid::GridInitializer::GridInitializer(Grid &grid) : grid(grid) {}
+
+int Grid::GridInitializer::AllocateGrid()
+{
+	int size = 1, i, j; 
+	for (i = 0; i < grid.GridRank; i++)
+		size *= grid.GridDimension[i] + 2 * grid.NumberofGhostZones;
+	try
+	{
+		grid.GridData = new double*[grid.NumberofBaryonFields];
+		for (i = 0; i < grid.NumberofBaryonFields; i++)
+		{
+			grid.GridData[i] = new double[size];
+			for (j = 0; j < size; j++)
+				grid.GridData[i][j] = 0.0;
+		}
+	}
+	catch(exception &e)
+	{
+		printf("Nuke detected!\n");
+		return FAIL;
+	}
+
+	grid.PrintMetaData();
+	return SUCCESS;
+}
+
+void Grid::GridInitializer::AssignPrimitive(double (&w)[4], double d, double u, double p)
+{
+	w[0] = d;
+	w[1] = u;
+	w[2] = p;
+}
+
+int Grid::GridInitializer::TestInitialize(int setNo)
+{ 
+	if(AllocateGrid() != SUCCESS)
+	{
+		RETURNFAIL("failed to allocate memories to grid");
+	}
+	printf("PIPE ENDS @ file %s, line %d\n", __FILE__, __LINE__);
+	return FAIL;
+}
+
+/*
 int grid::Grid_Test1Initialize(){
 	int i;
 	double dL = 1.0,uL = 0.75,pL = 1.0,eL;
@@ -163,3 +208,4 @@ int grid::Grid_Test5Initialize(){
 	}
 	return SUCCESS;
 }
+*/
