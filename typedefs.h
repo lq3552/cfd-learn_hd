@@ -1,6 +1,9 @@
 /* Define customized types for number precisions, solvers and fields  */
 // currently many are useless but reserved for future use
 
+#ifndef TYPEDEFS_H
+#define TYPEDEFS_H
+
 typedef int field_type;
 typedef int boundary_type;
 typedef int hydro_type;
@@ -17,8 +20,8 @@ const field_type
 
 /* Boundary Condition */
 const boundary_type
-	periodic = 0,
-	outflow = 1;
+	Periodic = 0,
+	Outflow = 1;
 	
 /* Hydro Solver Framework */
 const hydro_type
@@ -27,6 +30,8 @@ const hydro_type
 
 /* Riemann Solver */
 const riemann_type
-	exact = 0,
+	Exact = 0,
 	HLLC  = 1,
 	HLLD  = 2;
+
+#endif

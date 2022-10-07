@@ -1,6 +1,4 @@
-#include <stdio.h>
-#include <math.h>
-#include "global.h"
+#include "Global.h"
 
 /* Local Riemann Solver
    created on Nov. 27, 2016

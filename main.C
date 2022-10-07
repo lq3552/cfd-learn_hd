@@ -4,35 +4,39 @@
    Update1: Oct. 16, 2017
  */
 
-#include <stdio.h>
-#include "global.h"
+#include "Global.h"
 #include "typedefs.h"
-#include "grid.h"
-
-int SetParameter(FILE *fptr);
-int InitializeNew();
-
-grid Grid;
+#include "Grid.h"
 
 int main(int argc, char *argv[]){
+	Grid grid;
 	FILE *fptr;
-	if (argc > 1){
+
+	if (argc > 1)
+	{
 		printf("Reading parameter file to set global parameters...\n");
 		if ((fptr = fopen(argv[1],"r")) == NULL)
-			RETURNFAIL("ERROR: failed to open parameter file!\n");
-		if (SetParameter(fptr) != SUCCESS)
-			RETURNFAIL("ERROR: failed to set global parameters from file!\n");
-		printf("Setting parameters successes!\n");
+			RETURNFAIL("failed to open parameter file!\n");
+		if (SetParameter(grid, fptr) != SUCCESS)
+			RETURNFAIL("failed to set global parameters from file!\n");
+		printf("Setting parameters succeeds!\n");
 	}
-	printf("%f\n",LengthUnit);
-	Grid.PrintMetaData();
-	if (InitializeNew() != SUCCESS)
-		RETURNFAIL("ERROR: failed to initialize problem!\n");
-	if (Solver == HD){
-		if (Grid.GodunovSolver() != SUCCESS)
-			RETURNFAIL("ERROR: failure in Godunov solver!\n");
+	else
+	{
+		RETURNFAIL("please provide the parameter file: (EXE) PATH_TO_PARAMETER_FILE\n");
 	}
-	if (Grid.Output() != SUCCESS)
-		RETURNFAIL("ERROR: failed to output!\n");
+
+	if (Grid::GridInitializer(grid).TestInitialize(ProblemType) != SUCCESS)
+		RETURNFAIL("failed to initialize problem!\n");
+
+	if (Solver == HD)
+	{
+		if (grid.GodunovSolver() != SUCCESS)
+			RETURNFAIL("failure in Godunov solver!\n");
+	}
+
+	if (grid.Output() != SUCCESS)
+		RETURNFAIL("failed to output!\n");
+
 	return SUCCESS;
 }

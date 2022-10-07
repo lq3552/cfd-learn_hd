@@ -1,7 +1,16 @@
+#ifndef GLOBAL_H
+#define GLOBAL_H
+
+#include <math.h>
+#include <stdio.h>
+#include <iostream> // for next version
+#include <exception>
+using namespace std;
+
 #define SUCCESS 0
 #define FAIL 1
 #define TINY 1e-16
-#define RETURNFAIL(x) {printf("%s",x);return FAIL;}
+#define RETURNFAIL(x) {printf("ERROR: %s",x);return FAIL;}
 #define TOL 1e-6
 #define MAX_LINE_LENGTH 100
 #define MAX_DIMENSION 3
@@ -38,3 +47,5 @@ extern int StopCycle;
 /* Output */
 extern char* DataDump; //prefix of output
 extern double dtDump; // cycle of output
+
+#endif

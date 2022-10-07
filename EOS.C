@@ -1,18 +1,20 @@
-#include <math.h>
-#include <stdio.h>
-#include "global.h"
-#include "grid.h"
+/* handlers of equation of states */
 
-//EOS's relation with grid is a bit messy! improbe it!
+#include "Global.h"
+#include "Grid.h"
 
-int EOS(double *d,double *e, double *p,double *cs){// Only support ideal gas for now
+//EOS's relation with Grid is a bit messy! improbe it!
+
+int EOS(Grid &grid, double *p,double *cs)
+{// Only support ideal gas for now
 	int i,size=1;
-	for (i = 0; i < Grid.GridRank; i++)
-		size *= Grid.GridDimension[i] + 2*Grid.NumberofGhostZones;
-	if (EOSType == 1){ // ideal gas
+	for (i = 0; i < grid.GridRank; i++)
+		size *= grid.GridDimension[i] + 2 * grid.NumberofGhostZones;
+	if (EOSType == 1)
+	{ // ideal gas
 		for (i = 0; i < size; i++){
-			p[i] = e[i]*(Gamma-1);
-			cs[i] = sqrt(Gamma*p[i]/d[i]);
+			p[i] = grid.GridData[TENum][i] * (Gamma - 1);
+			cs[i] = sqrt(Gamma * p[i] / grid.GridData[DensNum][i]);
 		}
 		return SUCCESS;
 	}
@@ -20,8 +22,10 @@ int EOS(double *d,double *e, double *p,double *cs){// Only support ideal gas for
 		return FAIL;
 }
 
-int pEOS(double d, double p, double &e, double &cs){// Only support ideal gas for now
-	if (EOSType == 1){ // ideal gas
+int pEOS(double d, double p, double &e, double &cs)
+{// Only support ideal gas for now
+	if (EOSType == 1)
+	{ // ideal gas
 		e = p/(Gamma-1);
 		cs = sqrt(Gamma*p/d);
 		return SUCCESS;
