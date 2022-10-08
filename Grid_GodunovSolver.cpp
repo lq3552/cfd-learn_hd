@@ -8,6 +8,7 @@
 #include "Global.h"
 #include "proto.h"
 #include "EOS.h"
+#include "RiemannSolver.h"
 
 Grid::GodunovSolver::GodunovSolver(Grid &grid) : grid(grid) 
 {
@@ -106,8 +107,15 @@ int Grid::GodunovSolver::FluxFirstOrder(){
 		WR[1] = u[i + 1];
 		WR[2] = p[i + 1];
 		cR = cs[i + 1];
-		if (Riemann(WL, cL, WR, cR, WS) != SUCCESS)
-			RETURNFAIL("failed to compute flux via Remann Solver!\n");
+		if (Global::RiemannSolver == Exact)
+		{
+			if (RiemannSolver(WL, cL, WR, cR, WS).RiemannExact() != SUCCESS)
+				RETURNFAIL("failed to compute flux via Remann Solver!\n");
+		}
+		else
+		{
+			RETURNFAIL("unsupported Riemann Solver\n");
+		}
 		/* convert state to flux */
 		dS = WS[0];
 		uS = WS[1];
