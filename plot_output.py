@@ -45,4 +45,4 @@ ax.set_xticks(xticks)
 ax.grid(True)
 
 plt.subplots_adjust(hspace = 0)
-plt.savefig("result.eps")
+plt.savefig("result.png", dpi = 600)
