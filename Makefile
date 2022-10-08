@@ -47,7 +47,7 @@ show-sys: $(SYSFILE)
 
 
 # Implicit rules
-%.o : %.C
+%.o : %.cpp
 	$(CXX) $(OPTION) $< -o $@
 
 
