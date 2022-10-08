@@ -1,13 +1,23 @@
 #include "Global.h"
 #include "Grid.h"
 
-void Grid::SetMetaData(int m_GridRank,int m_GridDimension[],int m_NumberofGhostZones,int m_NumberofBaryonFields)
+Grid::~Grid() // it is not needed for a hydro solver structured like ours; just for learning
 {
-	GridRank = m_GridRank;
+	/* garbage collection */
+	for (int i = 0; i < NumberofBaryonFields; i++)
+	{
+		delete[] GridData[i];
+	}
+	delete[] GridData;
+}
+
+void Grid::SetMetaData(int i_GridRank,int i_GridDimension[],int i_NumberofGhostZones,int i_NumberofBaryonFields)
+{
+	GridRank = i_GridRank;
 	for (int i = 0; i < GridRank; i++)
-		GridDimension[i] = m_GridDimension[i];
-	NumberofGhostZones = m_NumberofGhostZones;
-	NumberofBaryonFields = m_NumberofBaryonFields;
+		GridDimension[i] = i_GridDimension[i];
+	NumberofGhostZones = i_NumberofGhostZones;
+	NumberofBaryonFields = i_NumberofBaryonFields;
 }
 
 void Grid::PrintMetaData()

@@ -2,10 +2,10 @@ OBJECTS = \
 	EOS.o\
 	SetParameter.o\
 	Global.o\
+	Grid.o\
 	Grid_GridInitializer.o\
 	Grid_SetBoundary.o\
 	Grid_TimeStep.o\
-	Grid_Godunov.o\
-	Grid_IO.o\
+	Grid_GodunovSolver.o\
 	RiemannSolver.o\
 	main.o\

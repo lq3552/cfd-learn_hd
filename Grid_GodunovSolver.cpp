@@ -9,30 +9,31 @@
 #include "proto.h"
 #include "EOS.h"
 
-int Grid::GodunovSolver()
+Grid::GodunovSolver::GodunovSolver(Grid &grid) : grid(grid) 
 {
-	/* Godunov Solver, currently only 1st order, 1 D*/
-	/* TODO: use more storage-efficient data structure, i.e. use array alias and in-place operation */
+	time = 0.0;
+	dx = Global::LengthUnit / grid.GridDimension[0];
+
+	/* alias */
+	d = grid.GridData[DensNum];
+	E = grid.GridData[TENum];
+	e = grid.GridData[GENum];
+	u = grid.GridData[Vel1Num];
+
 	int size = 1;
-	double time = 0.0, dt, dx = Global::LengthUnit / GridDimension[0];
-	double *d, *E, *e, *u, *p, *cs;
-	double **U, **F;
-	for (int i = 0; i < GridRank; i++)
-		size *= GridDimension[i] + 2 * NumberofGhostZones;
-	d = GridData[DensNum];
-	E = GridData[TENum];
-	e = GridData[GENum];
-	u = GridData[Vel1Num];
+	for (int i = 0; i < grid.GridRank; i++)
+		size *= grid.GridDimension[i] + 2 * grid.NumberofGhostZones;
 	p = new double[size];
 	cs = new double[size];
-	U = new double*[GridRank * 3]; //Note: GridRank *3 only valid for 1D... will improve later
-	F = new double*[GridRank * 3];
-	for (int i = 0; i < GridRank * 3; i++)
+	U = new double*[grid.GridRank * 3]; //Note: GridRank *3 only valid for 1D... will improve later
+	F = new double*[grid.GridRank * 3];
+
+	for (int i = 0; i < grid.GridRank * 3; i++)
 	{
 		U[i] = new double[size];
 		F[i] = new double[size];
 	}
-	for (int i = NumberofGhostZones; i < GridDimension[0] +  NumberofGhostZones; i++)
+	for (int i = grid.NumberofGhostZones; i < grid.GridDimension[0] +  grid.NumberofGhostZones; i++)
 	{
 		U[0][i] = d[i];
 		U[1][i] = d[i] * u[i];
@@ -41,55 +42,61 @@ int Grid::GodunovSolver()
 		F[1][i] = 0.0;
 		F[2][i] = 0.0;
 	}
-	if (EOS(*this, p ,cs) != SUCCESS)
+}
+
+Grid::GodunovSolver::~GodunovSolver()
+{
+	/* garbage collection */
+	delete[] p;
+	delete[] cs;
+	for (int i = 0; i < grid.GridRank * 3; i++)
+	{
+		delete[] U[i];
+		delete[] F[i];
+	}
+	delete[] U;
+	delete[] F;
+}
+
+int Grid::GodunovSolver::EvolveGodunovFirstOrder()
+{
+	/* First-order Godunov Solver, currently only 1st order, 1 D*/
+	/* TODO: use more storage-efficient data structure, i.e. use array alias and in-place operation */
+
+	if (EOS(grid, p ,cs) != SUCCESS)
 		RETURNFAIL("unable to calculate p and cs from d and e!\n");
 	for (int i = 0; i < Global::StopCycle; i++)
 	{
 		/* Set boundary conditions */
-		if (SetBoundary(p, cs, U) != SUCCESS)
+		if (grid.SetBoundary(p, cs, U) != SUCCESS)
 			RETURNFAIL("failed to apply boundary condition!\n");
 		/* CFL-based condition */
-		if (Hydro_TimeStep(dx, time, cs, dt) != SUCCESS)
+		if (grid.Hydro_TimeStep(dx, time, cs, dt) != SUCCESS)
 			RETURNFAIL("failed to compute time step!\n");
 		time += dt;
-		printf("cycle = %d, dt = %f, t = %f\n",i+1,dt,time);
-		/* compute intercell numerical flux */
-		if (Flux(d,E,e,u,p,cs,U,F,GridRank,GridDimension,NumberofGhostZones) != SUCCESS)
+		printf("cycle = %d, dt = %f, t = %f\n", i+1, dt, time);
+		/* compute interface numerical fluxes */
+		if (FluxFirstOrder() != SUCCESS)
 			RETURNFAIL("failed to compute time step!\n");
-		if (Hydro_Update(dx,dt,d,E,e,u,p,cs,U,F,GridRank,GridDimension,NumberofGhostZones) != SUCCESS)
+		if (Hydro_Update() != SUCCESS)
 			RETURNFAIL("failed to update state!\n");
-		if (EOS(*this, p ,cs) != SUCCESS)
+		if (EOS(grid, p ,cs) != SUCCESS)
 			RETURNFAIL("unable to calculate p and cs from d and e!\n");
 		if (fabs(time - Global::StopTime) < TINY)
 			break;
 	}
 
-	/*
-	for (i = 0; i < size; i++){
-		Grid[DensNum][i] = d[i];
-		Grid[TENum][i] = E[i];
-		Grid[GENum][i] = e[i];
-		Grid[Vel1Num][i] = u[i];
-	}
-	*/
-
-	/* clean up */
-	delete[] p;
-	delete[] cs;
-	delete[] U;
-	delete[] F;
 	printf("Computation complete!\n");
 	return SUCCESS;
 }
 
-int Flux(double *d, double *E, double *e, double *u, double *p, double *cs, double **U, double **F,int GridRank,int* GridDimension,int NumberofGhostZones){
-	int size = GridDimension[0] + 2 * NumberofGhostZones - 1;
+int Grid::GodunovSolver::FluxFirstOrder(){
 	double *WL, *WR, *WS;// W = [d,u,p]
 	double dS, uS, pS, eS, ES, cS, cL, cR;
 	WL = new double[3];
 	WR = new double[3];
 	WS = new double[3];
-	for (int i = 0; i < size; i ++)
+	for (int i = 0; i < grid.GridDimension[0] + 2 * grid.NumberofGhostZones - 1; i ++)
 	{
 		WL[0] = d[i];
 		WL[1] = u[i];
@@ -117,12 +124,12 @@ int Flux(double *d, double *E, double *e, double *u, double *p, double *cs, doub
 	return SUCCESS;
 }
 
-int Hydro_Update(double dx, double dt, double *d, double *E, double *e, double *u, double *p, double *cs, double **U, double **F,int GridRank,int* GridDimension,int NumberofGhostZones)
+int Grid::GodunovSolver::Hydro_Update()
 {
 	double dtodx = dt / dx;
-	for (int i = NumberofGhostZones; i < GridDimension[0] + NumberofGhostZones; i++)
+	for (int i = grid.NumberofGhostZones; i < grid.GridDimension[0] + grid.NumberofGhostZones; i++)
 	{
-		for (int n = 0; n < GridRank * 3; n++)
+		for (int n = 0; n < grid.GridRank * 3; n++)
 			U[n][i] = U[n][i] + dtodx * (F[n][i-1] - F[n][i]);
 		d[i] = U[0][i];
 		u[i] = U[1][i] / d[i];
