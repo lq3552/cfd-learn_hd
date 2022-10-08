@@ -1,6 +1,7 @@
 OBJECTS = \
 	EOS.o\
 	SetParameter.o\
+	Global.o\
 	Grid_GridInitializer.o\
 	Grid_SetBoundary.o\
 	Grid_TimeStep.o\

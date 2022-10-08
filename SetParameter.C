@@ -2,44 +2,7 @@
    Written by: Qi Li
    create date : Nov. 30, 2016*/
 
-#include <stdio.h>
 #include "Global.h"
-#include "typedefs.h"
-#include "Grid.h"
-
-/* Field Index */
-int DensNum = 0;  
-int TENum = 1; 
-int GENum = 2; 
-int Vel1Num = 3;
-
-/* Problem parameters  */
-int ProblemType = 5;
-
-/* Units [cgs] */
-double LengthUnit = 1;
-double TimeUnit = 1;
-double DensityUnit = 1;
-
-/* Hydrodynamics parameter */
-int Solver = HD;//1: Godunov 1st order
-int RiemannSolver = Exact;
-int RiemannIteration = 20;
-int BoundaryCondition = Outflow; //1: outflow
-
-/* Thermal dynamics parameter */
-int EOSType = 1;
-float Gamma = 1.4;
-float Mu = 0.6;
-
-/* Time step */
-float CourantNumber = 0.4;
-double StopTime = 0.25;
-int StopCycle = 1000000;
-
-/* Output */
-char* DataDump;
-double dtDump;
 
 int SetParameter(Grid &grid, FILE* fptr)
 {
@@ -47,8 +10,24 @@ int SetParameter(Grid &grid, FILE* fptr)
 	char line[MAX_LINE_LENGTH];
 	int ret = 1;
 	int comment_count = 0;
+
+	/* Default Global parameters */
+	int ProblemType = 0;
+	double LengthUnit = 1.0;
+	double TimeUnit = 1.0;
+	double DensityUnit = 1.0;
+	int Solver = HD;
+	int RiemannSolver = Exact;
+	int RiemannIteration = 20;
+	int BoundaryCondition = Outflow;
+	int EOSType = 1;
+	float Gamma = 1.4;
+	float Mu = 0.6;
+	float CourantNumber = 0.4;
+	double StopTime = 1.0;
+	int StopCycle = 1000000;
 	
-	/* Default Top grid parameters*/
+	/* Default Top grid parameters */
 	int GridRank = 1;
 	int GridDimension[MAX_DIMENSION] = {0};
 	int NumberofGhostZones = 1;
@@ -84,6 +63,16 @@ int SetParameter(Grid &grid, FILE* fptr)
 		ret += sscanf(line,"StopTime = %lf",&StopTime);
 		ret += sscanf(line,"StopCycle = %d",&StopCycle);
 	}
+
+	Global::SetGlobalParameter(ProblemType,
+			             LengthUnit, TimeUnit, DensityUnit,
+						 Solver, RiemannSolver, RiemannIteration, BoundaryCondition,
+						 EOSType, Gamma, Mu,
+						 CourantNumber, StopTime, StopCycle);
+	Global::PrintGlobalParameter();
+
 	grid.SetMetaData(GridRank, GridDimension, NumberofGhostZones, NumberofBaryonFields);
+	grid.PrintMetaData();
+
 	return SUCCESS;
 }

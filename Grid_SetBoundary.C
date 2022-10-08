@@ -1,37 +1,40 @@
 /* routine for setting boundary values */
 #include "Global.h"
-#include "typedefs.h"
-#include "Grid.h"
 
-int Grid::SetBoundary(double *p, double *cs, double **U){
+int Grid::SetBoundary(double *p, double *cs, double **U)
+{
 	/* Purpose: set boundary conditions
 	   1 - outflow
 	   2 - reflect (currently not supported)
 	*/
-	int i, n, rear = GridDimension[0] + NumberofGhostZones -1;
-	if (BoundaryCondition == Outflow){//outflow
-		for (i = 0; i < NumberofGhostZones; i++){
-			GridData[DensNum][i] = GridData[DensNum][NumberofGhostZones];
-			GridData[TENum][i]   = GridData[TENum][NumberofGhostZones];
-			GridData[GENum][i]   = GridData[GENum][NumberofGhostZones];
-			GridData[Vel1Num][i] = GridData[Vel1Num][NumberofGhostZones];
-			p[i]  = p[NumberofGhostZones];
-			cs[i] = cs[NumberofGhostZones];
-			for (n = 0; n < GridRank * 3; n++)
-				U[n][i] = U[n][NumberofGhostZones];
-		}
-		for (i = GridDimension[0] + NumberofGhostZones; i < GridDimension[0] + 2 * NumberofGhostZones; i++){
-			GridData[DensNum][i] = GridData[DensNum][rear];
-			GridData[TENum][i]   = GridData[TENum][rear];
-			GridData[GENum][i]   = GridData[GENum][rear];
-			GridData[Vel1Num][i] = GridData[Vel1Num][rear];
-			p[i] = p[rear];
-			cs[i] = cs[rear];
-			for (n = 0; n < GridRank * 3; n++)
-				U[n][i] = U[n][rear];
-		}
+	int rear = GridDimension[0] + NumberofGhostZones -1;
+	if (Global::BoundaryCondition == Outflow)
+	{	// outflow
+		for (int i = 0; i < NumberofGhostZones; i++)
+			SetGhostValue(i, NumberofGhostZones, p, cs, U);
+		for (int i = GridDimension[0] + NumberofGhostZones; i < GridDimension[0] + 2 * NumberofGhostZones; i++)
+			SetGhostValue(i, rear, p, cs, U);
 	}
 	else
 		RETURNFAIL("Unsupported boundary condition type!\n");
 	return SUCCESS;
+}
+
+void Grid::SetGhostValue(int i, int i_bound, double *p, double *cs, double **U)
+{
+	switch(Global::BoundaryCondition)
+	{
+		case Outflow:
+			GridData[DensNum][i] = GridData[DensNum][i_bound];
+			GridData[TENum][i]   = GridData[TENum][i_bound];
+			GridData[GENum][i]   = GridData[GENum][i_bound];
+			GridData[Vel1Num][i] = GridData[Vel1Num][i_bound];
+			p[i]  = p[i_bound];
+			cs[i] = cs[i_bound];
+			for (int n = 0; n < GridRank * 3; n++)
+				U[n][i] = U[n][i_bound];
+			return;
+		default:
+			return;
+	}
 }

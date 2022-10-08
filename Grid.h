@@ -14,8 +14,9 @@ class Grid
 		double **GridData; //TODO: use C++ standard container instead of C-flavor (though MPI could be not as straightforward)
 	
 		int SetBoundary(double *p, double *cs, double **U);
+		void SetGhostValue(int i, int i_bound, double *p, double *cs, double **U);
 		int Hydro_TimeStep(double dx, double time, double *cs, double &dt);
-		void SetMetaData(int m_GridRank, int m_GridDimension[], int m_NumberofGhostZones, int m_NumberofBaryonFields);
+		void SetMetaData(int i_GridRank, int i_GridDimension[], int i_NumberofGhostZones, int i_NumberofBaryonFields);
 	
 	public:
 		void PrintMetaData();

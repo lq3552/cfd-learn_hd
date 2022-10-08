@@ -6,19 +6,18 @@
    create date: Nov 27, 2016 */
 
 #include "Global.h"
-#include "typedefs.h"
-#include "Grid.h"
 #include "proto.h"
 #include "EOS.h"
 
-int Grid::GodunovSolver(){
+int Grid::GodunovSolver()
+{
 	/* Godunov Solver, currently only 1st order, 1 D*/
 	/* TODO: use more storage-efficient data structure, i.e. use array alias and in-place operation */
-	int i, size = 1;
-	double time = 0.0, dt, dx = LengthUnit / GridDimension[0];
+	int size = 1;
+	double time = 0.0, dt, dx = Global::LengthUnit / GridDimension[0];
 	double *d, *E, *e, *u, *p, *cs;
 	double **U, **F;
-	for (i = 0; i < GridRank; i++)
+	for (int i = 0; i < GridRank; i++)
 		size *= GridDimension[i] + 2 * NumberofGhostZones;
 	d = GridData[DensNum];
 	E = GridData[TENum];
@@ -28,11 +27,13 @@ int Grid::GodunovSolver(){
 	cs = new double[size];
 	U = new double*[GridRank * 3]; //Note: GridRank *3 only valid for 1D... will improve later
 	F = new double*[GridRank * 3];
-	for (i = 0; i < GridRank * 3; i++){
+	for (int i = 0; i < GridRank * 3; i++)
+	{
 		U[i] = new double[size];
 		F[i] = new double[size];
 	}
-	for (i = NumberofGhostZones; i < GridDimension[0] +  NumberofGhostZones; i++){
+	for (int i = NumberofGhostZones; i < GridDimension[0] +  NumberofGhostZones; i++)
+	{
 		U[0][i] = d[i];
 		U[1][i] = d[i] * u[i];
 		U[2][i] = E[i];
@@ -41,8 +42,8 @@ int Grid::GodunovSolver(){
 		F[2][i] = 0.0;
 	}
 	if (EOS(*this, p ,cs) != SUCCESS)
-		RETURNFAIL("Unable to calculate p and cs from d and e!\n");
-	for (i = 0; i < StopCycle; i++)
+		RETURNFAIL("unable to calculate p and cs from d and e!\n");
+	for (int i = 0; i < Global::StopCycle; i++)
 	{
 		/* Set boundary conditions */
 		if (SetBoundary(p, cs, U) != SUCCESS)
@@ -59,7 +60,7 @@ int Grid::GodunovSolver(){
 			RETURNFAIL("failed to update state!\n");
 		if (EOS(*this, p ,cs) != SUCCESS)
 			RETURNFAIL("unable to calculate p and cs from d and e!\n");
-		if (fabs(time - StopTime) < TINY)
+		if (fabs(time - Global::StopTime) < TINY)
 			break;
 	}
 
@@ -82,13 +83,14 @@ int Grid::GodunovSolver(){
 }
 
 int Flux(double *d, double *E, double *e, double *u, double *p, double *cs, double **U, double **F,int GridRank,int* GridDimension,int NumberofGhostZones){
-	int i,size = GridDimension[0] + 2 * NumberofGhostZones - 1;
+	int size = GridDimension[0] + 2 * NumberofGhostZones - 1;
 	double *WL, *WR, *WS;// W = [d,u,p]
 	double dS, uS, pS, eS, ES, cS, cL, cR;
 	WL = new double[3];
 	WR = new double[3];
 	WS = new double[3];
-	for (i = 0; i < size; i ++){
+	for (int i = 0; i < size; i ++)
+	{
 		WL[0] = d[i];
 		WL[1] = u[i];
 		WL[2] = p[i];
@@ -103,7 +105,7 @@ int Flux(double *d, double *E, double *e, double *u, double *p, double *cs, doub
 		dS = WS[0];
 		uS = WS[1];
 		pS = WS[2];
-		pEOS(dS,pS,eS,cS);
+		pEOS(dS, pS, eS, cS);
 		ES = eS + 0.5 * dS * uS * uS;
 		F[0][i] = dS * uS;
 		F[1][i] = dS * uS * uS + pS;
@@ -115,14 +117,15 @@ int Flux(double *d, double *E, double *e, double *u, double *p, double *cs, doub
 	return SUCCESS;
 }
 
-int Hydro_Update(double dx, double dt, double *d, double *E, double *e, double *u, double *p, double *cs, double **U, double **F,int GridRank,int* GridDimension,int NumberofGhostZones){
-	int i,j,k,n;
-	double dtodx = dt/dx;
-	for (i = NumberofGhostZones; i < GridDimension[0] + NumberofGhostZones; i++){
-		for (n = 0; n < GridRank * 3; n++)
+int Hydro_Update(double dx, double dt, double *d, double *E, double *e, double *u, double *p, double *cs, double **U, double **F,int GridRank,int* GridDimension,int NumberofGhostZones)
+{
+	double dtodx = dt / dx;
+	for (int i = NumberofGhostZones; i < GridDimension[0] + NumberofGhostZones; i++)
+	{
+		for (int n = 0; n < GridRank * 3; n++)
 			U[n][i] = U[n][i] + dtodx * (F[n][i-1] - F[n][i]);
 		d[i] = U[0][i];
-		u[i] = U[1][i]/d[i];
+		u[i] = U[1][i] / d[i];
 		E[i] = U[2][i];
 		e[i] = E[i] - 0.5 * d[i] * u[i] * u[i];
 	}

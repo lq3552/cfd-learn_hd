@@ -1,19 +1,17 @@
 /* compute time-step */
 #include "Global.h"
-#include "typedefs.h"
-#include "Grid.h"
 
 int Grid::Hydro_TimeStep(double dx, double time, double *cs, double &dt)
 {
 	int i, size = GridDimension[0] + 2 * NumberofGhostZones;
 	double Smax = TINY;
-	if (Solver == Exact)
+	if (Global::Solver == Exact)
 	{
 		for (i = 0; i < size; i++)
 			Smax = fmax(Smax, fabs(GridData[Vel1Num][i]) + cs[i]);
-		dt = CourantNumber*dx/Smax;
+		dt = Global::CourantNumber * dx / Smax;
 	}
-	if (time + dt > StopTime)
-		dt = StopTime - time;
+	if (time + dt > Global::StopTime)
+		dt = Global::StopTime - time;
 	return SUCCESS;
 }
