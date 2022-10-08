@@ -10,42 +10,62 @@ using namespace std;
 #define SUCCESS 0
 #define FAIL 1
 #define TINY 1e-16
-#define RETURNFAIL(x) {printf("ERROR: %s",x);return FAIL;}
 #define TOL 1e-6
 #define MAX_LINE_LENGTH 100
 #define MAX_DIMENSION 3
+#define RETURNFAIL(x) {printf("ERROR: %s",x);return FAIL;}
 
-/* Problem parameters  */
-extern int ProblemType;
-
-/* Units [cgs] */
-extern double LengthUnit,TimeUnit,DensityUnit;
+#include "typedefs.h"
+#include "Grid.h"
 
 /* Field Index */
-// the current setup is dangerous, because it is possible to change those values somewhere except for initialization
-extern int DensNum;  
-extern int TENum; 
-extern int GENum; 
-extern int Vel1Num; 
+const int DensNum = 0;  
+const int TENum = 1; 
+const int GENum = 2; 
+const int Vel1Num = 3; 
 
-/* Hydrodynamics parameter */
-extern int Solver;
-extern int RiemannSolver;
-extern int RiemannIteration;
-extern int BoundaryCondition;
 
-/* Thermal dynamics parameter */
-extern int EOSType;
-extern float Gamma;
-extern float Mu;
+class Global
+{
+	public:
+		/* Problem parameters  */
+		static int ProblemType;
 
-/* Time step */
-extern float CourantNumber;
-extern double StopTime;
-extern int StopCycle;
+		/* Units [cgs] */
+		static double LengthUnit; // inline since C++17
+		static double TimeUnit;
+		static double DensityUnit;
 
-/* Output */
-extern char* DataDump; //prefix of output
-extern double dtDump; // cycle of output
+		/* Hydrodynamics parameter */
+		static int Solver;
+		static int RiemannSolver;
+		static int RiemannIteration;
+		static int BoundaryCondition;
+
+		/* Thermal dynamics parameter */
+		static int EOSType;
+		static float Gamma;
+		static float Mu;
+
+		/* Time step */
+		static float CourantNumber;
+		static double StopTime;
+		static int StopCycle;
+
+		/* Output */
+		static char* DataDump; //prefix of output
+		static double dtDump; // cycle of output
+
+	private:
+		// TODO: seek best practice, this looks really ugly
+		static void SetGlobalParameter(int i_ProblemType,
+				                 double i_LengthUnit, double i_TimeUnit, double i_DensityUnit,
+								 int i_Solver, int i_RiemannSolver, int i_RiemannIteration, int i_BoundaryCondition,
+								 int i_EOSType, float i_Gamma, float i_Mu,
+								 float i_CourantNumber, double i_StopTime, int i_StopCycle);
+		static void PrintGlobalParameter();
+
+	friend int SetParameter(Grid &grid, FILE *fptr);
+};
 
 #endif

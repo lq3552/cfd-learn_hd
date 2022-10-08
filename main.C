@@ -5,10 +5,10 @@
  */
 
 #include "Global.h"
-#include "typedefs.h"
 #include "Grid.h"
 
-int main(int argc, char *argv[]){
+int main(int argc, char *argv[])
+{
 	Grid grid;
 	FILE *fptr;
 
@@ -26,10 +26,10 @@ int main(int argc, char *argv[]){
 		RETURNFAIL("please provide the parameter file: (EXE) PATH_TO_PARAMETER_FILE\n");
 	}
 
-	if (Grid::GridInitializer(grid).TestInitialize(ProblemType) != SUCCESS)
+	if (Grid::GridInitializer(grid).TestInitialize(Global::ProblemType) != SUCCESS)
 		RETURNFAIL("failed to initialize problem!\n");
 
-	if (Solver == HD)
+	if (Global::Solver == HD)
 	{
 		if (grid.GodunovSolver() != SUCCESS)
 			RETURNFAIL("failure in Godunov solver!\n");
