@@ -11,12 +11,13 @@
    TODO: make RiemannSolver a class with static methods and static const members
 */
    
-int StarRegion(double *WL, double cL, double *WR, double cR, double *WS, float *G);
-int GuessPressure(double &p0,double dL,double uL,double pL,double cL,double dR,double uR,double pR,double cR,float *G);
-int PreFunc(double &fK,double &dfK,double pold,double dK,double pK,double cK,float *G);
-int Sampler(double *WL, double cL, double *WR, double cR, double *WS, float *G);
+int StarRegion(const double* const WL, const double cL, const double* const WR, const double cR, double* const WS, const float* const G);
+int GuessPressure(double &p0, const double dL, const double uL, const double pL, const double cL, const double dR, const double uR, const double pR, const double cR, const float* const G);
+int PreFunc(double &fK,double &dfK, const double pold, const double dK, const double pK, const double cK, const float* const G);
+int Sampler(const double* const WL, const double cL, const double* const WR, const double cR, double* const WS, const float* const G);
 
-int Riemann(double *WL, double cL, double *WR, double cR, double *WS){
+int Riemann(const double* const WL, const double cL, const double* const WR, const double cR, double* const WS)
+{
 	float *G; // Gamma related constants 
 	// pre-compute gamma related constants
 	G = new float[8];
@@ -38,7 +39,8 @@ int Riemann(double *WL, double cL, double *WR, double cR, double *WS){
 }
 
 
-int StarRegion(double *WL, double cL, double *WR, double cR, double *WS, float *G){
+int StarRegion(const double* const WL, const double cL, const double* const WR, const double cR, double* const WS, const float* const G)
+{
 	// Purpose: solve pressure and velocity in star region
 	double dL, dR, uL, uR, uS, pL, pR, pS;
 	double change;
@@ -78,7 +80,7 @@ int StarRegion(double *WL, double cL, double *WR, double cR, double *WS, float *
 	return SUCCESS;
 }
 
-int GuessPressure(double &p0, double dL, double uL, double pL, double cL, double dR, double uR, double pR, double cR, float *G)
+int GuessPressure(double &p0, const double dL, const double uL, const double pL, const double cL, const double dR, const double uR, const double pR, const double cR, const float* const G)
 {
 	/* Purpose: to provide a guess value for pressure pS in the star region.
 	The choice is made according to adaptive Riemann solver
@@ -119,10 +121,10 @@ int GuessPressure(double &p0, double dL, double uL, double pL, double cL, double
 	return SUCCESS;
 }
 
-int PreFunc(double &fK,double &dfK,double p,double dK,double pK,double cK,float *G){
+int PreFunc(double &fK, double &dfK, const double p, const double dK, const double pK, const double cK, const float* const G)
+{
 	// purpose: to evalute the pressure functions fL and fR in exact Riemann solver
 	double AK,BK,prat,qrt;
-//	printf("%f,%f,%f,%f\n",dK,pK,cK,p);
 	if (p <= pK){ // Rarefaction wave
 		prat = p/pK;
 		fK = G[3]*cK*(pow(prat,G[0]) - 1.0);
@@ -139,7 +141,7 @@ int PreFunc(double &fK,double &dfK,double p,double dK,double pK,double cK,float 
 	return SUCCESS;
 }
 
-int Sampler(double *WL, double cL, double *WR, double cR, double *WS, float *G)
+int Sampler(const double* const WL, const double cL, const double* const WR, double cR, double* const WS, const float* const G)
 {
 	/* purpose: to sample the solution throughout the wave pattern. Pressure pS and velocity uS in the Star Region are known.
 	Sampling is performed in terms of the ’speed’ S = x/t = 0.
@@ -260,10 +262,10 @@ int Sampler(double *WL, double cL, double *WR, double cR, double *WS, float *G)
 				else
 				{
 					// subcase 3: sampled point is inside right fan
-					WS[1] = G[4]*(-cR + G[6]*uR);
-					C = G[4]*(cR - G[6]*uR);
-					WS[0] = dR*pow(C/cR,G[3]);
-					WS[2] = pR*pow(C/cR,G[2]);
+					WS[1] = G[4] * (-cR + G[6] * uR);
+					C = G[4] * (cR - G[6] * uR);
+					WS[0] = dR * pow(C / cR,G[3]);
+					WS[2] = pR * pow(C / cR,G[2]);
 				}
 			}
 		}

@@ -91,11 +91,11 @@ int Grid::GodunovSolver::EvolveGodunovFirstOrder()
 }
 
 int Grid::GodunovSolver::FluxFirstOrder(){
-	double *WL, *WR, *WS;// W = [d,u,p]
+	double* const WL(new double[3]); 
+	double* const WR(new double[3]);
+	double* const WS(new double[3]);// W = [d,u,p]
 	double dS, uS, pS, eS, ES, cS, cL, cR;
-	WL = new double[3];
-	WR = new double[3];
-	WS = new double[3];
+
 	for (int i = 0; i < grid.GridDimension[0] + 2 * grid.NumberofGhostZones - 1; i ++)
 	{
 		WL[0] = d[i];
