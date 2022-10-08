@@ -1,4 +1,4 @@
-OBJECTS = \
+OBJS = \
 	EOS.o\
 	SetParameter.o\
 	Global.o\
