@@ -25,7 +25,7 @@ include Make.config.objects
 LOG = compile.out
 EXE = Hydro.exe
 
-CXX = g++ Wc++17-extensions
+CXX = g++
 CC = gcc
 OPTIMIZE = -Wall -g #study further
 OPTION = -Wall -c

@@ -30,7 +30,7 @@ int Grid::Output()
 		size *= GridDimension[i] + 2 * NumberofGhostZones;
 	if ((fp = fopen("output.txt","w")) == NULL)
 		return FAIL;
-	// Note: it's only support 1D for now, I will correct it later
+	// Note: it's only support 1D for now
 	for (int i = NumberofGhostZones; i < size - NumberofGhostZones; i++){
 		fprintf(fp,"%lf\t%lf\t%lf\t%lf\n",GridData[DensNum][i], GridData[TENum][i], GridData[GENum][i] , GridData[Vel1Num][i]);
 	}

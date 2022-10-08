@@ -1,4 +1,6 @@
+*.png
 *.eps
+*.jpg
 *.out
 *.exe
 *.o

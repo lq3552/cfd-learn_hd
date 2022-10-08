@@ -1,9 +1,9 @@
 /* Problem paprameters */
-ProblemType = 2
+ProblemType = 0
 
 /* Top grid parameters */
 GridRank = 1
-GridDimension = 1000
+GridDimension = 10000
 NumberofGhostZones = 1
 NumberofBaryonFields = 4
 
