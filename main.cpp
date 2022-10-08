@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
 
 	if (Global::Solver == HD)
 	{
-		if (grid.GodunovSolver() != SUCCESS)
+		if (Grid::GodunovSolver(grid).EvolveGodunovFirstOrder() != SUCCESS)
 			RETURNFAIL("failure in Godunov solver!\n");
 	}
 
