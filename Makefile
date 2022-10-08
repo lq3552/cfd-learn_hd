@@ -1,56 +1,71 @@
 #=======================================================================
 #
-# SUMMARY: Makefile for Gudunov HD solver
+# Summary: Makefile for Gudunov HD solver
 #
-# AUTHOR: Qi Li (pg3552@ufl.edu)
+# Author: Qi Li (pg3552@ufl.edu)
 #
-# DATE: 2017-10-09
+# Created: 2017-10-09
+# Updated: 2022-10-09
 #
-# CONFIGURABLE FILE:
+# Configurable files:
 #	Make.config.system      define syste type
 #	Make.system.systemname  system-dependent settings
 #	Make.config.objects     list of object files
 #
-# DESCRIPTION:
+# Description:
 #	make [EXE=Hydro.exe] [LOG=compile.out]
 #=======================================================================
 
 ifndef SHELL
-  SHELL = /bin/bash
+  SHELL := /bin/bash
 endif
 
+ROOT      := $(dir $(lastword $(MAKEFILE_LIST)))
+ROOT      := $(ROOT:/=)
+SRC_DIR   := $(ROOT)/src
+BUILD_DIR := $(ROOT)/build
 
-include Make.config.objects
+LOG := compile.out
+EXE := Hydro.exe
 
-LOG = compile.out
-EXE = Hydro.exe
-
-CXX = g++
-CC = gcc
-OPTIMIZE = -Wall -g #study further
-OPTION = -Wall -c
-
+# set compilers and options based on system
 include Make.config.system
 ifeq ($(SYSTYPE),"macintosh-sierra")
   SYSFILE = Make.system.macintosh-sierra
   include $(SYSFILE)
+else
+  CXX = g++
+  CC = gcc
+  OPTIMIZE = -Wall -g #study further
+  OPTION = -Wall -c
 endif
 
-# Generate an executable
-$(EXE): $(OBJECTS)
-	$(CXX) $(OPTIMIZE) $(OBJECTS) -o $(EXE)
+DUMMY := $(shell mkdir -p $(BUILD_DIR))
+
+# set the list of objects and headers
+include Make.config.objects
+OBJS := $(addprefix $(BUILD_DIR)/, $(OBJS))
+include Make.config.includes
+INCL := $(addprefix $(SRC_DIR)/, $(INCL))
 
 
-# show system
+### build rules
+# generate an executable
+all: build
+
+build: $(EXE)
+
+$(EXE): $(OBJS)
+	$(CXX) $(OPTIMIZE) $(OBJS) -o $(EXE)
+
+$(BUILD_DIR)/%.o : $(SRC_DIR)/%.cpp $(INCL)
+	$(CXX) $(OPTION) $< -o $@
+
+# show system information
 show-sys: $(SYSFILE)
 	@echo "System type: $(SYSTYPE)"
 
-
-# Implicit rules
-%.o : %.cpp
-	$(CXX) $(OPTION) $< -o $@
-
-
-# Clean
+# clean up
 clean:
-	rm -f $(OBJECTS) $(EXE)
+	rm -f $(OBJS) $(EXE)
+	rm -rf $(BUILD_DIR)

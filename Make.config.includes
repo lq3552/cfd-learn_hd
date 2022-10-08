@@ -1,0 +1,7 @@
+INCL = \
+	EOS.h\
+	Global.h\
+	Grid.h\
+	RiemannSolver.h\
+	proto.h\
+	typedefs.h

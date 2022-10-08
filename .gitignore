@@ -1,9 +1,15 @@
+# examples / data products
 *.png
 *.eps
 *.jpg
-*.out
-*.exe
-*.o
-*.par
 output.txt
 riemann.data
+
+# parameter file
+*.par
+
+# build
+build/
+*.o
+*.out
+*.exe

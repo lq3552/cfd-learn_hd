@@ -7,4 +7,5 @@
 # compiler settings
 CXX = g++
 CC = gcc
-OPT = -Wall -g
+OPTIMIZE = -Wall -g
+OPTION = -Wall -c
