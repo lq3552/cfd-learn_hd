@@ -1,72 +1,65 @@
 #include "Global.h"
+#include "RiemannSolver.h"
 
-/* Local Riemann Solver
-   created on Nov. 27, 2016
-   written by Qi Li
-   Purpose: solve Local Riemman Problem of Euler Equations
-   Version:
-   1.0: 1D, pure hydro, exact Riemann solver (Nov. 27, 2016)
-   Input: WL,cL,WR,cR
-   Output: WS
-   TODO: make RiemannSolver a class with static methods and static const members
-*/
-   
-int StarRegion(const double* const WL, const double cL, const double* const WR, const double cR, double* const WS, const float* const G);
-int GuessPressure(double &p0, const double dL, const double uL, const double pL, const double cL, const double dR, const double uR, const double pR, const double cR, const float* const G);
-int PreFunc(double &fK,double &dfK, const double pold, const double dK, const double pK, const double cK, const float* const G);
-int Sampler(const double* const WL, const double cL, const double* const WR, const double cR, double* const WS, const float* const G);
-
-int Riemann(const double* const WL, const double cL, const double* const WR, const double cR, double* const WS)
+RiemannSolver::RiemannSolver(const double* const WL, const double cL,
+		const double* const WR, const double cR, double* const WS) :
+	dL(WL[0]),
+	uL(WL[1]),
+	pL(WL[2]),
+	cL(cL),
+	dR(WR[0]),
+	uR(WR[1]),
+	pR(WR[2]),
+	cR(cR),
+	WS(WS)
 {
-	float *G; // Gamma related constants 
-	// pre-compute gamma related constants
-	G = new float[8];
 	G[0] = (Global::Gamma - 1.0) / (2.0 * Global::Gamma);
-	G[1] = (Global::Gamma + 1.0)/(2.0 * Global::Gamma);
+	G[1] = (Global::Gamma + 1.0) / (2.0 * Global::Gamma);
 	G[2] = 2.0 * Global::Gamma / (Global::Gamma - 1.0);
 	G[3] = 2.0 / (Global::Gamma - 1.0);
 	G[4] = 2.0 / (Global::Gamma + 1.0);
-	G[5] = G[0] / G[1];
+	G[5] = (Global::Gamma - 1.0) / (Global::Gamma + 1.0);
 	G[6] = (Global::Gamma - 1.0) / 2.0;
 	G[7] = Global::Gamma - 1.0;
+}
+
+int RiemannSolver::RiemannExact()
+{
 	// compute star-region state
-	if (StarRegion(WL, cL, WR, cR, WS, G) != SUCCESS)
-		RETURNFAIL("Failed to compute state of star regions!\n");	
-	if (Sampler(WL, cL, WR, cR, WS, G) != SUCCESS)
-		RETURNFAIL("Failed to sample the solution!\n");
-	delete[] G;
+	if (StarRegion() != SUCCESS)
+		RETURNFAIL("failed to compute state of star regions!\n");	
+	if (Sampler() != SUCCESS)
+		RETURNFAIL("failed to sample the solution!\n");
 	return SUCCESS;
 }
 
 
-int StarRegion(const double* const WL, const double cL, const double* const WR, const double cR, double* const WS, const float* const G)
+int RiemannSolver::StarRegion()
 {
 	// Purpose: solve pressure and velocity in star region
-	double dL, dR, uL, uR, uS, pL, pR, pS;
+	double uS, pS;
 	double change;
 	double fR, dfR, fL, dfL, du;
 	double p0, pold; // p0: initial guessed pressure
-	dL = WL[0];
-	uL = WL[1];
-	pL = WL[2];
-	dR = WR[0];
-	uR = WR[1];
-	pR = WR[2];
+
 	// guess initial pressure for Newton Iteration
-	if (GuessPressure(p0, dL, uL, pL, cL, dR, uR, pR, cR, G) != SUCCESS)
-		RETURNFAIL("Failed to guess initial pressure\n");
+	if (GuessPressure(p0) != SUCCESS)
+		RETURNFAIL("failed to guess initial pressure\n");
 	pold = p0;
 	du = uR - uL;
 	// Iterate to solve f = fR + fL + du = 0  for p_star
-	for (int i = 0; i < Global::RiemannIteration; i++){
-		if (PreFunc(fL, dfL, pold, dL, pL, cL, G) != SUCCESS)
-			RETURNFAIL("Failed to calculate fL of exact RS\n");
-		if (PreFunc(fR, dfR, pold, dR, pR, cR, G) != SUCCESS)
+	for (int i = 0; i < Global::RiemannIteration; i++)
+	{
+		if (PreFunc(fL, dfL, pold, dL, pL, cL) != SUCCESS)
+			RETURNFAIL("failed to calculate fL of exact RS\n");
+		if (PreFunc(fR, dfR, pold, dR, pR, cR) != SUCCESS)
 			RETURNFAIL("Failed to calculate fR of exact RS\n");
 		pS = pold - (fL + fR + du) / (dfL + dfR);
 		change = 2.0 * fabs((pS - pold) / (pS + pold));
-		if (change < TOL) break;
-		if (pS < 0) pS = TOL;
+		if (change < TOL)
+			break;
+		if (pS < 0)
+			pS = TOL;
 		pold = pS;
 	}
 	if (change >= TOL)
@@ -80,7 +73,7 @@ int StarRegion(const double* const WL, const double cL, const double* const WR, 
 	return SUCCESS;
 }
 
-int GuessPressure(double &p0, const double dL, const double uL, const double pL, const double cL, const double dR, const double uR, const double pR, const double cR, const float* const G)
+int RiemannSolver::GuessPressure(double &p0)
 {
 	/* Purpose: to provide a guess value for pressure pS in the star region.
 	The choice is made according to adaptive Riemann solver
@@ -96,14 +89,14 @@ int GuessPressure(double &p0, const double dL, const double uL, const double pL,
 	Qmax = pmax / pmin;
 	if (Qmax <= Quser && (pmin <= pPV && pPV <= pmax))
 	{
-	// select PVRS Riemann Solver
+		// select PVRS Riemann Solver
 		p0 = pPV;
 	}
 	else
 	{
 		if(pPV < pmin)
 		{
-		// select two-rarefaction Riemann solver
+			// select two-rarefaction Riemann solver
 			pQ = pow(pL / pR, G[0]);
 			uS = (pQ * uL / cL + uR / cR + G[3] * (pQ - 1.0)) / (pQ / cL + 1.0 / cR);
 			pTL = 1.0 + G[6] * (uL - uS) / cL;
@@ -112,7 +105,7 @@ int GuessPressure(double &p0, const double dL, const double uL, const double pL,
 		}
 		else
 		{
-		// select two-shock Riemann solver with PVRS as estimate
+			// select two-shock Riemann solver with PVRS as estimate
 			GEL = sqrt((G[4] / dL)/(G[5] * pL + pPV));
 			GER = sqrt((G[4] / dR)/(G[5] * pR + pPV));
 			p0 = (GEL * pL + GER * pR - (uR - uL)) / (GEL + GER);
@@ -121,46 +114,42 @@ int GuessPressure(double &p0, const double dL, const double uL, const double pL,
 	return SUCCESS;
 }
 
-int PreFunc(double &fK, double &dfK, const double p, const double dK, const double pK, const double cK, const float* const G)
+int RiemannSolver::PreFunc(double &fK, double &dfK, const double p,
+		const double dK, const double pK, const double cK)
 {
 	// purpose: to evalute the pressure functions fL and fR in exact Riemann solver
-	double AK,BK,prat,qrt;
-	if (p <= pK){ // Rarefaction wave
-		prat = p/pK;
-		fK = G[3]*cK*(pow(prat,G[0]) - 1.0);
-		dfK = (1.0/(dK*cK))*pow(prat,-G[1]);
-
+	double AK, BK, prat, qrt;
+	if (p <= pK)
+	{ // Rarefaction wave
+		prat = p / pK;
+		fK = G[3] * cK * (pow(prat, G[0]) - 1.0);
+		dfK = (1.0 / (dK * cK)) * pow(prat, -G[1]);
 	}
-	else{ // Shock wave
-		AK = G[4]/dK;
-		BK = G[5]*pK;
-		qrt = sqrt(AK/(BK+p));
-		fK = (p-pK)*qrt;
-		dfK = (1.0 - 0.5*(p-pK)/(BK+p))*qrt;
+	else
+	{ // Shock wave
+		AK = G[4] / dK;
+		BK = G[5] * pK;
+		qrt = sqrt(AK / (BK+p));
+		fK = (p - pK) * qrt;
+		dfK = (1.0 - 0.5 * (p - pK) / (BK + p)) * qrt;
 	}
 	return SUCCESS;
 }
 
-int Sampler(const double* const WL, const double cL, const double* const WR, double cR, double* const WS, const float* const G)
+int RiemannSolver::Sampler()
 {
 	/* purpose: to sample the solution throughout the wave pattern. Pressure pS and velocity uS in the Star Region are known.
 	Sampling is performed in terms of the ’speed’ S = x/t = 0.
 	Sampled values are density, velocity and pressure.
 	Denote S firstly refers to star region but finally refers to "solution".*/
-	double dL, dR, uL, uR, uS, pL, pR, pS;
-	double SHL, STL, SHR, STR, SL, SR, cS;
+	double uS, pS, cS;
+	double SHL, STL, SHR, STR, SL, SR;
 	double C, pSL, pSR;
-	dL = WL[0];
-	uL = WL[1];
-	pL = WL[2];
-	dR = WR[0];
-	uR = WR[1];
-	pR = WR[2];
 	uS = WS[1];
 	pS = WS[2];
 	// sampling
 	if (0.0 <= uS)
-	{ 
+	{
 		// Supcase 1: Left wave
 		if (pS > pL)
 		{
@@ -170,9 +159,9 @@ int Sampler(const double* const WL, const double cL, const double* const WR, dou
 			if (0.0 <= SL)
 			{
 				// subcase 1: sampled point is left data state
-				WS[0] = WL[0];
-				WS[1] = WL[1];
-				WS[2] = WL[2];
+				WS[0] = dL;
+				WS[1] = uL;
+				WS[2] = pL;
 			}
 			else
 			{
@@ -188,9 +177,9 @@ int Sampler(const double* const WL, const double cL, const double* const WR, dou
 			if (0.0 <= SHL)
 			{
 				// subcase 1: sampled point is left data state
-				WS[0] = WL[0];
-				WS[1] = WL[1];
-				WS[2] = WL[2];
+				WS[0] = dL;
+				WS[1] = uL;
+				WS[2] = pL;
 			}
 			else
 			{
@@ -225,9 +214,9 @@ int Sampler(const double* const WL, const double cL, const double* const WR, dou
 			if (0.0 >= SR)
 			{
 				// subcase 1: sampled point is right data state
-				WS[0] = WR[0];
-				WS[1] = WR[1];
-				WS[2] = WR[2];
+				WS[0] = dR;
+				WS[1] = uR;
+				WS[2] = pR;
 			}
 			else
 			{
@@ -244,9 +233,9 @@ int Sampler(const double* const WL, const double cL, const double* const WR, dou
 			if (0.0 >= SHR)
 			{
 				// subcase 1: sampled point is right data state
-				WS[0] = WR[0];
-				WS[1] = WR[1];
-				WS[2] = WR[2];
+				WS[0] = dR;
+				WS[1] = uR;
+				WS[2] = pR;
 			}
 			else
 			{
