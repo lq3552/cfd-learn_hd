@@ -3,7 +3,7 @@
 
 #include <math.h>
 #include <stdio.h>
-#include <iostream> // TODO: remove the dependence on stdio.h
+#include <iostream>
 #include <exception>
 using namespace std;
 

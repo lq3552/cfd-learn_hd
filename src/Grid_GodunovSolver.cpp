@@ -62,8 +62,6 @@ Grid::GodunovSolver::~GodunovSolver()
 int Grid::GodunovSolver::EvolveGodunovFirstOrder()
 {
 	/* First-order Godunov Solver, currently only 1st order, 1 D*/
-	/* TODO: use more storage-efficient data structure, i.e. use array alias and in-place operation */
-
 	if (EOS(grid, p ,cs) != SUCCESS)
 		RETURNFAIL("unable to calculate p and cs from d and e!\n");
 	for (int i = 0; i < Global::StopCycle; i++)
