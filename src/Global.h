@@ -3,7 +3,7 @@
 
 #include <math.h>
 #include <stdio.h>
-#include <iostream> // TODO: remove the dependence on stdio.h
+#include <iostream>
 #include <exception>
 using namespace std;
 
@@ -15,6 +15,7 @@ using namespace std;
 #define MAX_DIMENSION 3
 #define RETURNFAIL(x) {printf("ERROR: %s",x);return FAIL;}
 
+#include "Property.h"
 #include "typedefs.h"
 #include "Grid.h"
 
@@ -22,32 +23,34 @@ class Global
 {
 	public:
 		/* Problem parameters  */
-		static int ProblemType;
+		static Property<int> ProblemType;
 
 		/* Units [cgs] */
-		static double LengthUnit; // inline since C++17
-		static double TimeUnit;
-		static double DensityUnit;
+		static Property<double> LengthUnit; // inline since C++17
+		static Property<double> TimeUnit;
+		static Property<double> DensityUnit;
 
 		/* Hydrodynamics parameter */
-		static int Solver;
-		static int RiemannSolver;
-		static int RiemannIteration;
-		static int BoundaryCondition;
+		static Property<int> Solver;
+		static Property<int> RiemannSolver;
+		static Property<int> RiemannIteration;
+		static Property<int> BoundaryCondition;
 
 		/* Thermal dynamics parameter */
-		static int EOSType;
-		static float Gamma;
-		static float Mu;
+		static Property<int> EOSType;
+		static Property<float> Gamma;
+		static Property<float> Mu;
 
 		/* Time step */
-		static float CourantNumber;
-		static double StopTime;
-		static int StopCycle;
+		static Property<float> CourantNumber;
+		static Property<double> StopTime;
+		static Property<int> StopCycle;
 
 		/* Output */
-		static char* DataDump; //prefix of output
-		static double dtDump; // cycle of output
+		static Property<char>* DataDump; //prefix of output
+		static Property<double> dtDump; // cycle of output
+
+		static void PrintGlobalParameter();
 
 	private:
 		static void SetGlobalParameter(int i_ProblemType,
@@ -55,7 +58,6 @@ class Global
 								 int i_Solver, int i_RiemannSolver, int i_RiemannIteration, int i_BoundaryCondition,
 								 int i_EOSType, float i_Gamma, float i_Mu,
 								 float i_CourantNumber, double i_StopTime, int i_StopCycle);
-		static void PrintGlobalParameter();
 
 	friend int SetParameter(Grid &grid, FILE *fptr);
 };

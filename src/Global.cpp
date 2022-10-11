@@ -3,22 +3,22 @@
 #include "Global.h"
 
 /* static members */
-int    Global::ProblemType;
-double Global::LengthUnit;
-double Global::TimeUnit;
-double Global::DensityUnit;
-int    Global::Solver;
-int    Global::RiemannSolver;
-int    Global::RiemannIteration;
-int    Global::BoundaryCondition;
-int    Global::EOSType;
-float  Global::Gamma;
-float  Global::Mu;
-float  Global::CourantNumber;
-double Global::StopTime;
-int    Global::StopCycle;
-char* Global::DataDump;
-double Global::dtDump;
+Property<int>    Global::ProblemType;
+Property<double> Global::LengthUnit;
+Property<double> Global::TimeUnit;
+Property<double> Global::DensityUnit;
+Property<int>    Global::Solver;
+Property<int>    Global::RiemannSolver;
+Property<int>    Global::RiemannIteration;
+Property<int>    Global::BoundaryCondition;
+Property<int>    Global::EOSType;
+Property<float>  Global::Gamma;
+Property<float>  Global::Mu;
+Property<float>  Global::CourantNumber;
+Property<double> Global::StopTime;
+Property<int>    Global::StopCycle;
+Property<char>* Global::DataDump;
+Property<double> Global::dtDump;
 
 /* static methods */
 void Global::SetGlobalParameter(int i_ProblemType,
@@ -39,33 +39,53 @@ void Global::SetGlobalParameter(int i_ProblemType,
 	Gamma             = i_Gamma;
 	Mu                = i_Mu;
 	CourantNumber     = i_CourantNumber;
-	StopTime          = i_StopTime;
 	StopCycle         = i_StopCycle;
+	switch (i_ProblemType) // override StopTime from param file if a test problem is set
+	{
+		case 0:
+			StopTime = 0.20;
+			break;
+		case 1:
+			StopTime = 0.15;
+			break;
+		case 2:
+			StopTime = 0.012;
+			break;
+		case 3:
+			StopTime = 0.035;
+			break;
+		case 4:
+			StopTime = 0.012;
+			break;
+		default:
+			StopTime = i_StopTime;
+			break;
+	}
 }
 
 void Global::PrintGlobalParameter()
 {
 	printf("/* Problem paprameters */\n");
-	printf("ProblemType: %d\n", ProblemType);
+	printf("ProblemType: %d\n", (int)ProblemType);
 
 	printf("/* Units [cgs] */\n");
-	printf("LengthUnit: %g\n", LengthUnit);
-	printf("TimeUnit: %g\n", TimeUnit);
-	printf("DensityUnit: %g\n", DensityUnit);
+	printf("LengthUnit: %g\n", (double)LengthUnit);
+	printf("TimeUnit: %g\n", (double)TimeUnit);
+	printf("DensityUnit: %g\n", (double)DensityUnit);
 
 	printf("/* Hydrodynamics parameter */\n");
-	printf("Solver: %d\n", Solver);
-	printf("RiemannSolver: %d\n", RiemannSolver);
-	printf("RiemannIteration: %d\n", RiemannIteration);
-	printf("BoundaryCondition: %d\n", BoundaryCondition);
+	printf("Solver: %d\n", (int)Solver);
+	printf("RiemannSolver: %d\n", (int)RiemannSolver);
+	printf("RiemannIteration: %d\n", (int)RiemannIteration);
+	printf("BoundaryCondition: %d\n", (int)BoundaryCondition);
 
 	printf("/* Thermal dynamics parameter */\n");
-	printf("EOSType: %d\n", EOSType);
-	printf("Gamma: %g\n", Gamma);
-	printf("Mu: %g\n", Mu);
+	printf("EOSType: %d\n", (int)EOSType);
+	printf("Gamma: %g\n", (float)Gamma);
+	printf("Mu: %g\n", (float)Mu);
 
 	printf("/* Time step */\n");
-	printf("CourantNumber: %g\n", CourantNumber);
-	printf("StopTime: %g\n", StopTime);
-	printf("StopCycle: %d\n", StopCycle);
+	printf("CourantNumber: %g\n", (float)CourantNumber);
+	printf("StopTime: %g\n", (double)StopTime);
+	printf("StopCycle: %d\n", (int)StopCycle);
 }

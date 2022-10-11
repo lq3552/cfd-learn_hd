@@ -52,31 +52,26 @@ int Grid::GridInitializer::TestInitialize(int setNo)
 		case 0: // shock tube
 			AssignPrimitive(wL, 1.0, 0.75, 1.0);
 			AssignPrimitive(wR, 0.125, 0.0, 0.1);
-			Global::StopTime = 0.20;
 			fractionLeft = 0.3;
 			break;
 		case 1: // rarefaction
 			AssignPrimitive(wL, 1.0, -2.0, 0.4);
 			AssignPrimitive(wR, 1.0, 2.0, 0.4);
-			Global::StopTime = 0.15;
 			fractionLeft = 0.5;
 			break;
 		case 2: // expansion
 			AssignPrimitive(wL, 1.0, 0.0, 1000.0);
 			AssignPrimitive(wR, 1.0, 0.0, 0.01);
-			Global::StopTime = 0.012;
 			fractionLeft = 0.5;
 			break;
 		case 3: // mixing
 			AssignPrimitive(wL, 5.99924, 19.5975, 460.894);
 			AssignPrimitive(wR, 5.99242, -6.19633, 46.095);
-			Global::StopTime = 0.035;
 			fractionLeft = 0.4;
 			break;
 		case 4: // expansion + Galilean transformation
 			AssignPrimitive(wL, 1.0, -19.59745, 1000.0);
 			AssignPrimitive(wR, 1.0, -19.59745, 0.01);
-			Global::StopTime = 0.012;
 			fractionLeft = 0.8;
 			break;
 		default:

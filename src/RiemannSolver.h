@@ -10,7 +10,7 @@
 class RiemannSolver
 {
 	private:
-		float G[8]; // Gamma related constants TODO: a better solution to make it static const
+		float G[8];
 		const double dL, uL, pL, cL; // density, velocity, pressure, sound speed
 		const double dR, uR, pR, cR;
 		double* const WS; // star region primitives

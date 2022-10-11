@@ -11,7 +11,7 @@ class Grid
 		int GridDimension[MAX_DIMENSION];
 		int NumberofGhostZones;
 		int NumberofBaryonFields;
-		double **GridData; //TODO: use C++ standard container instead of C-flavor (though MPI could be not as straightforward)
+		double **GridData;
 	
 		int SetBoundary(double *p, double *cs, double **U);
 		void SetGhostValue(int i, int i_bound, double *p, double *cs, double **U);
