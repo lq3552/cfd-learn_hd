@@ -3,7 +3,7 @@
 
 #include <math.h>
 #include <stdio.h>
-#include <iostream> // for next version
+#include <iostream> // TODO: remove the dependence on stdio.h
 #include <exception>
 using namespace std;
 
@@ -17,13 +17,6 @@ using namespace std;
 
 #include "typedefs.h"
 #include "Grid.h"
-
-/* Field Index */
-const int DensNum = 0;  
-const int TENum = 1; 
-const int GENum = 2; 
-const int Vel1Num = 3; 
-
 
 class Global
 {
@@ -57,7 +50,6 @@ class Global
 		static double dtDump; // cycle of output
 
 	private:
-		// TODO: seek best practice, this looks really ugly
 		static void SetGlobalParameter(int i_ProblemType,
 				                 double i_LengthUnit, double i_TimeUnit, double i_DensityUnit,
 								 int i_Solver, int i_RiemannSolver, int i_RiemannIteration, int i_BoundaryCondition,

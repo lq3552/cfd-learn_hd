@@ -5,7 +5,6 @@
  */
 
 #include "Global.h"
-#include "Grid.h"
 
 int main(int argc, char *argv[])
 {
@@ -29,7 +28,7 @@ int main(int argc, char *argv[])
 	if (Grid::GridInitializer(grid).TestInitialize(Global::ProblemType) != SUCCESS)
 		RETURNFAIL("failed to initialize problem!\n");
 
-	if (Global::Solver == HD)
+	if (Global::Solver == Types::HD)
 	{
 		if (Grid::GodunovSolver(grid).EvolveGodunovFirstOrder() != SUCCESS)
 			RETURNFAIL("failure in Godunov solver!\n");

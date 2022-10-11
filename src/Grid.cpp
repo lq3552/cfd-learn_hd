@@ -1,5 +1,5 @@
 #include "Global.h"
-#include "Grid.h"
+using namespace Types;
 
 Grid::~Grid() // it is not needed for a hydro solver structured like ours; just for learning
 {

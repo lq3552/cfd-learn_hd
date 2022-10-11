@@ -1,6 +1,7 @@
 /* handlers of equation of states */
 
 #include "Global.h"
+using namespace Types;
 
 //EOS's relation with Grid is a bit messy! improbe it!
 

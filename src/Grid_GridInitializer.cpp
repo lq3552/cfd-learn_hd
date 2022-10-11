@@ -1,6 +1,7 @@
 /* Methods for initialization of grid data */
 
 #include "Global.h"
+using namespace Types;
 #include "EOS.h"
 
 Grid::GridInitializer::GridInitializer(Grid &grid) : grid(grid) {}
