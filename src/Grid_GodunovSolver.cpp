@@ -6,7 +6,7 @@
    create date: Nov 27, 2016 */
 
 #include "Global.h"
-#include "proto.h"
+using namespace Types;
 #include "EOS.h"
 #include "RiemannSolver.h"
 
@@ -107,7 +107,7 @@ int Grid::GodunovSolver::FluxFirstOrder(){
 		WR[1] = u[i + 1];
 		WR[2] = p[i + 1];
 		cR = cs[i + 1];
-		if (Global::RiemannSolver == Exact)
+		if (Global::RiemannSolver == EXACT)
 		{
 			if (RiemannSolver(WL, cL, WR, cR, WS).RiemannExact() != SUCCESS)
 				RETURNFAIL("failed to compute flux via Remann Solver!\n");

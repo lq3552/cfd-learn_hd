@@ -4,34 +4,37 @@
 #ifndef TYPEDEFS_H
 #define TYPEDEFS_H
 
-typedef int field_type;
-typedef int boundary_type;
-typedef int hydro_type;
-typedef int riemann_type;
+typedef int FieldType;
+typedef int BoundaryType;
+typedef int HydroType;
+typedef int RiemannType;
 
-/* Baryon Field */
-const field_type
-	Density = 0,
-	TotalEnergy = 1,
-	InternalEnergy = 2,
-	Velocity1 = 3,
-	Velocity2 = 4,
-	Velocity3 = 5;
+namespace Types
+{
+	/* Baryon Field Index */
+	const FieldType
+		DensNum = 0,
+		TENum = 1,
+		GENum = 2,
+		Vel1Num = 3,
+		Vel2Num = 4,
+		Vel3Num = 5;
 
-/* Boundary Condition */
-const boundary_type
-	Periodic = 0,
-	Outflow = 1;
-	
-/* Hydro Solver Framework */
-const hydro_type
-	HD = 0,
-	MHDCT = 1;
+	/* Boundary Condition */
+	const BoundaryType
+		PERIODIC = 0,
+		OUTFLOW = 1;
 
-/* Riemann Solver */
-const riemann_type
-	Exact = 0,
-	HLLC  = 1,
-	HLLD  = 2;
+	/* Hydro Solver Framework */
+	const HydroType
+		HD = 0,
+		MHDCT = 1;
+
+	/* Riemann Solver */
+	const RiemannType
+		EXACT = 0,
+		HLLC  = 1,
+		HLLD  = 2;
+}
 
 #endif

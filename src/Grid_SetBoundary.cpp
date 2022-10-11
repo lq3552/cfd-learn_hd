@@ -1,5 +1,6 @@
 /* routine for setting boundary values */
 #include "Global.h"
+using namespace Types;
 
 int Grid::SetBoundary(double *p, double *cs, double **U)
 {
@@ -8,7 +9,7 @@ int Grid::SetBoundary(double *p, double *cs, double **U)
 	   2 - reflect (currently not supported)
 	*/
 	int rear = GridDimension[0] + NumberofGhostZones -1;
-	if (Global::BoundaryCondition == Outflow)
+	if (Global::BoundaryCondition == OUTFLOW)
 	{	// outflow
 		for (int i = 0; i < NumberofGhostZones; i++)
 			SetGhostValue(i, NumberofGhostZones, p, cs, U);
@@ -24,7 +25,7 @@ void Grid::SetGhostValue(int i, int i_bound, double *p, double *cs, double **U)
 {
 	switch(Global::BoundaryCondition)
 	{
-		case Outflow:
+		case OUTFLOW:
 			GridData[DensNum][i] = GridData[DensNum][i_bound];
 			GridData[TENum][i]   = GridData[TENum][i_bound];
 			GridData[GENum][i]   = GridData[GENum][i_bound];

@@ -16,10 +16,10 @@ int SetParameter(Grid &grid, FILE* fptr)
 	double LengthUnit = 1.0;
 	double TimeUnit = 1.0;
 	double DensityUnit = 1.0;
-	int Solver = HD;
-	int RiemannSolver = Exact;
+	int Solver = Types::HD;
+	int RiemannSolver = Types::EXACT;
 	int RiemannIteration = 20;
-	int BoundaryCondition = Outflow;
+	int BoundaryCondition = Types::OUTFLOW;
 	int EOSType = 1;
 	float Gamma = 1.4;
 	float Mu = 0.6;
