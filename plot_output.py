@@ -4,44 +4,36 @@ from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 
 Gamma = 1.4
 data = np.loadtxt("output.txt")
-data2 = np.loadtxt("riemann.data");
-x = np.arange(1,data.shape[0]+1)*1.0/data.shape[0]
-x2 = np.arange(1,data2.shape[0]+1)*1.0/data2.shape[0]
+data2 = np.loadtxt("riemann.data")
+
+def Rescale(data):
+	return np.arange(1, data.shape[0] + 1) * 1.0 / data.shape[0]
+
+x = Rescale(data)
+x2 = Rescale(data2)
+data[:, 1] = data[:, 3]
+data[:, 3] = data[:, 2] / data[:, 0]
+data[:, 2] = data[:, 2] * (Gamma - 1.0)
+data[:, 2]  = data[:, 2] 
+data2[:, 0] = data2[:, 1]
+data2[:, 1] = data2[:, 2]
+data2[:, 2] = data2[:, 3]
+data2[:, 3] = data2[:, 2] / (Gamma - 1.0) / data2[:, 0]
 xticks = np.arange(0,1.1,0.1)
+yLabels = ["Density", "Velocity", "Pressure", "Specific Internal Energy"]
 
 plt.figure(figsize=(20,12),dpi=600)
 
-ax = plt.subplot(2,2,1)
-plt.plot(x,data[:,0],'k^')
-plt.plot(x2,data2[:,1],'r')
-plt.ylabel('Density')
-ax.set_xticks(xticks)
-ax.set_xticklabels([])
-ax.grid(True)
-
-ax = plt.subplot(2,2,3)
-plt.plot(x,data[:,2]*(Gamma-1),'k^')
-plt.plot(x2,data2[:,3],'r')
-plt.xlabel('Position')
-plt.ylabel('Pressure')
-ax.set_xticks(xticks)
-ax.grid(True)
-
-ax = plt.subplot(2,2,2)
-plt.plot(x,data[:,3],'k^')
-plt.plot(x2,data2[:,2],'r')
-plt.ylabel('Velocity')
-ax.set_xticks(xticks)
-ax.set_xticklabels([])
-ax.grid(True)
-
-ax = plt.subplot(2,2,4)
-plt.plot(x,data[:,2]/data[:,0],'k^')
-plt.plot(x2,data2[:,3]/(Gamma-1)/data2[:,1],'r')
-plt.xlabel('Position')
-plt.ylabel('Specific Internal Energy')
-ax.set_xticks(xticks)
-ax.grid(True)
+for i in range(4):
+	ax = plt.subplot(2, 2, i + 1)
+	ax.plot(x,data[:, i],'k^')
+	ax.plot(x2,data2[:, i],'r')
+	ax.set_ylabel(yLabels[i])
+	ax.set_xticks(xticks)
+	ax.grid(True)
+	if i in [0, 1]:
+		ax.set_xticklabels([])
+	if i in [2, 3]:
+		ax.set_xlabel("Position")
 
 plt.subplots_adjust(hspace = 0)
-plt.savefig("result.png", dpi = 600)
