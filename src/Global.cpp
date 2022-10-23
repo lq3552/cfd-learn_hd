@@ -48,27 +48,27 @@ void Global::SetGlobalParameter(int i_ProblemType,
 
 void Global::PrintGlobalParameter()
 {
-	printf("/* Problem paprameters */\n");
-	printf("ProblemType: %d\n", (int)ProblemType);
+	std::cout << "/* Problem paprameters */\n"
+			  << "ProblemType: " << ProblemType << "\n"
 
-	printf("/* Units [cgs] */\n");
-	printf("LengthUnit: %g\n", (double)LengthUnit);
-	printf("TimeUnit: %g\n", (double)TimeUnit);
-	printf("DensityUnit: %g\n", (double)DensityUnit);
+			  << "/* Units [cgs] */\n"
+			  << "LengthUnit: " << LengthUnit << "\n"
+			  << "TimeUnit: " << TimeUnit << "\n"
+			  << "DensityUnit: " << DensityUnit << "\n"
 
-	printf("/* Hydrodynamics parameter */\n");
-	//printf("Solver: %d\n", (int)Solver);
-	//printf("RiemannSolver: %d\n", (int)RiemannSolver);
-	printf("RiemannIteration: %d\n", (int)RiemannIteration);
-	//printf("BoundaryCondition: %d\n", (int)BoundaryCondition);
+			  << "/* Hydrodynamics parameter */\n"
+			  //<< "Solver: " << Solver << "\n" // ERROR: use a template
+			  //printf("RiemannSolver: %d\n", (int)RiemannSolver);
+			  << "RiemannIteration: " << RiemannIteration << "\n"
+			  //printf("BoundaryCondition: %d\n", (int)BoundaryCondition);
 
-	printf("/* Thermal dynamics parameter */\n");
-	printf("EOSType: %d\n", (int)EOSType);
-	printf("Gamma: %g\n", (float)Gamma);
-	printf("Mu: %g\n", (float)Mu);
+			  << "/* Thermal dynamics parameter */\n"
+			  << "EOSType: " << EOSType << "\n"
+			  << "Gamma: " << Gamma << "\n"
+			  << "Mu: " << Mu << "\n"
 
-	printf("/* Time step */\n");
-	printf("CourantNumber: %g\n", (float)CourantNumber);
-	printf("StopTime: %g\n", (double)StopTime);
-	printf("StopCycle: %d\n", (int)StopCycle);
+			  << "/* Time step */\n"
+			  << "CourantNumber: " << CourantNumber << "\n"
+			  << "StopTime: " << StopTime << "\n"
+			  << "StopCycle: " << StopCycle << std::endl;
 }

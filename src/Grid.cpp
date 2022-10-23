@@ -1,5 +1,6 @@
 #include "Global.h"
 using namespace Types;
+#include <fstream>
 
 Grid::~Grid() // it is not needed for a hydro solver structured like ours; just for learning
 {
@@ -22,28 +23,33 @@ void Grid::SetMetaData(int i_GridRank,int i_GridDimension[],int i_NumberofGhostZ
 
 void Grid::PrintMetaData()
 {
-	printf("/* Top grid */\n");
-	printf("GridRank: %d\n", GridRank);
-	printf("NumberOfBaryonFields: %d\n", NumberofBaryonFields);
+	std::cout << "/* Top grid */\n"
+			  << "GridRank: " << GridRank << "\n"
+	          << "NumberOfBaryonFields: " << NumberofBaryonFields << std::endl;
 	for (int i = 0; i < GridRank; i++)
-		printf("GridDimension: %d ", GridDimension[i]);
-	printf("\n");
-	printf("NumberOfGhostZones: %d\n", NumberofGhostZones);
+		std::cout << "GridDimension: " << GridDimension[i];
+	std::cout << "\n"
+			  << "NumberOfGhostZones: " << NumberofGhostZones << std::endl;
 }
 
 int Grid::Output()
 {
 	// need add a fieldtype identifier!!!!
+	std::fstream outputFile;
+	outputFile.open("output.txt", std::fstream::out);
+	if (!outputFile)
+		RETURNFAIL("failed to create an output file");
+
 	int size=1;
-	FILE *fp;
 	for (int i = 0; i < GridRank; i++)
 		size *= GridDimension[i] + 2 * NumberofGhostZones;
-	if ((fp = fopen("output.txt","w")) == NULL)
-		return FAIL;
+
 	// Note: it's only support 1D for now
-	for (int i = NumberofGhostZones; i < size - NumberofGhostZones; i++){
-		fprintf(fp,"%lf\t%lf\t%lf\t%lf\n",GridData[DensNum][i], GridData[TENum][i], GridData[GENum][i] , GridData[Vel1Num][i]);
+	for (int i = NumberofGhostZones; i < size - NumberofGhostZones; i++)
+	{
+		outputFile << GridData[DensNum][i] << '\t' << GridData[TENum][i] << '\t' << GridData[GENum][i] << '\t' << GridData[Vel1Num][i] << std::endl;
 	}
-	fclose(fp);
+
+	outputFile.close();
 	return SUCCESS;
 }

@@ -5,6 +5,7 @@
  */
 
 #include "Global.h"
+#include <fstream>
 
 int main(int argc, char *argv[])
 {
@@ -13,37 +14,37 @@ int main(int argc, char *argv[])
 
 	if (argc > 1)
 	{
-		printf("Reading parameter file to set global parameters...\n");
+		std::cout << "Reading parameter file to set global parameters..." << std::endl;
 		if ((fptr = fopen(argv[1],"r")) == NULL)
-			RETURNFAIL("failed to open parameter file!\n");
+			RETURNFAIL("failed to open parameter file!");
 		if (SetParameter(grid, fptr) != SUCCESS)
-			RETURNFAIL("failed to set global parameters from file!\n");
-		printf("Setting parameters succeeds!\n");
+			RETURNFAIL("failed to set global parameters from file!");
+		std::cout << "Setting parameters succeeds!" << std::endl;
 	}
 	else
 	{
-		RETURNFAIL("please provide the parameter file: (EXE) PATH_TO_PARAMETER_FILE\n");
+		RETURNFAIL("please provide the parameter file: (EXE) PATH_TO_PARAMETER_FILE");
 	}
 
 	if (Grid::GridInitializer(grid).TestInitialize(Global::ProblemType) != SUCCESS)
-		RETURNFAIL("failed to initialize problem!\n");
+		RETURNFAIL("failed to initialize problem!");
 
 	switch (Global::Solver)
 	{
 		case Types::HydroType::HD_1ST: 
 			if (Grid::GodunovSolverFirstOrder(grid).EvolveGodunov() != SUCCESS)
-				RETURNFAIL("failure in first-order Godunov solver!\n");
+				RETURNFAIL("failure in first-order Godunov solver!");
 			break;
 		case Types::HydroType::HD_2ND: 
 			if (Grid::GodunovSolverSecondOrder(grid).EvolveGodunov() != SUCCESS)
-				RETURNFAIL("failure in second-order Godunov solver!\n");
+				RETURNFAIL("failure in second-order Godunov solver!");
 			break;
 		default:
-			RETURNFAIL("unsupported solver!\n");
+			RETURNFAIL("unsupported solver!");
 	}
 
 	if (grid.Output() != SUCCESS)
-		RETURNFAIL("failed to output!\n");
+		RETURNFAIL("failed to output!");
 
 	return SUCCESS;
 }

@@ -27,9 +27,9 @@ int RiemannSolver::RiemannExact()
 {
 	// compute star-region state
 	if (StarRegion() != SUCCESS)
-		RETURNFAIL("failed to compute state of star regions!\n");	
+		RETURNFAIL("failed to compute state of star regions!");
 	if (Sampler() != SUCCESS)
-		RETURNFAIL("failed to sample the solution!\n");
+		RETURNFAIL("failed to sample the solution!");
 	return SUCCESS;
 }
 
@@ -44,16 +44,16 @@ int RiemannSolver::StarRegion()
 
 	// guess initial pressure for Newton Iteration
 	if (GuessPressure(p0) != SUCCESS)
-		RETURNFAIL("failed to guess initial pressure\n");
+		RETURNFAIL("failed to guess initial pressure");
 	pold = p0;
 	du = uR - uL;
 	// Iterate to solve f = fR + fL + du = 0  for p_star
 	for (int i = 0; i < Global::RiemannIteration; i++)
 	{
 		if (PreFunc(fL, dfL, pold, dL, pL, cL) != SUCCESS)
-			RETURNFAIL("failed to calculate fL of exact RS\n");
+			RETURNFAIL("failed to calculate fL of exact RS");
 		if (PreFunc(fR, dfR, pold, dR, pR, cR) != SUCCESS)
-			RETURNFAIL("Failed to calculate fR of exact RS\n");
+			RETURNFAIL("Failed to calculate fR of exact RS");
 		pS = pold - (fL + fR + du) / (dfL + dfR);
 		change = 2.0 * fabs((pS - pold) / (pS + pold));
 		if (change < TOL)
@@ -63,7 +63,7 @@ int RiemannSolver::StarRegion()
 		pold = pS;
 	}
 	if (change >= TOL)
-		printf("WARNING: Divergence in Newton Iteration!\n");
+		std::cout << "WARNING: Divergence in Newton Iteration!" << std::endl;
 	// compute velocity in star region
 	uS = 0.5 * (uL + uR +fR -fL);
 	

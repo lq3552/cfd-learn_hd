@@ -35,7 +35,6 @@ int SetParameter(Grid &grid, FILE* fptr)
 	int NumberofBaryonFields = 4;
 
 	/* read parameter file */
-	rewind(fptr);
 	while ((fgets(line, MAX_LINE_LENGTH,fptr) != NULL) && (comment_count<2))
 	{
 		ret = 0;

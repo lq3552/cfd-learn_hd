@@ -8,17 +8,22 @@ class Property
 	T m_value;
 	/* override implicit type cast */
 	public:
-		operator T() const
-		{
-			return m_value;
-		}
+		operator T() const;
 	/* overload assignment */
 	private:
-		Property<T>& operator= (const T& value)
-		{
-			m_value = value;
-			return *this;
-		}
+		Property<T>& operator=(const T& value);
 
-		friend class Global;
+	friend class Global;
 };
+
+
+template <typename T> Property<T>::operator T() const
+{
+	return m_value;
+}
+
+template <typename T> Property<T>& Property<T>::operator=(const T& value)
+{
+	m_value = value;
+	return *this;
+}

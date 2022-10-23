@@ -18,7 +18,7 @@ Grid::GodunovSolverSecondOrder::GodunovSolverSecondOrder(Grid &grid) : Grid::God
 int Grid::GodunovSolverSecondOrder::EvolveGodunov()
 {
 	/* Second-order Godunov Solver */
-	printf("Second-order Godunov scheme computation complete!\n");
+	std::cout << "Second-order Godunov scheme computation complete!" << std::endl;
 	return SUCCESS;
 }
 

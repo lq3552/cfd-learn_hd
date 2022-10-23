@@ -17,7 +17,7 @@ int Grid::SetBoundary(double *p, double *cs, double **U)
 			SetGhostValue(i, rear, p, cs, U);
 	}
 	else
-		RETURNFAIL("Unsupported boundary condition type!\n");
+		RETURNFAIL("Unsupported boundary condition type!");
 	return SUCCESS;
 }
 

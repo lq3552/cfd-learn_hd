@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <iostream>
 #include <exception>
-using namespace std;
 
 #define SUCCESS 0
 #define FAIL 1
@@ -13,7 +12,7 @@ using namespace std;
 #define TOL 1e-6
 #define MAX_LINE_LENGTH 100
 #define MAX_DIMENSION 3
-#define RETURNFAIL(x) {printf("ERROR: %s",x);return FAIL;}
+#define RETURNFAIL(x) {std::cout << "ERROR: " << (x) << std::endl; return FAIL;}
 
 #include "Property.h"
 #include "typedefs.h"
