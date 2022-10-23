@@ -48,27 +48,27 @@ void Global::SetGlobalParameter(int i_ProblemType,
 
 void Global::PrintGlobalParameter()
 {
-	std::cout << "/* Problem paprameters */\n"
-			  << "ProblemType: " << ProblemType << "\n"
+	std::cout << "/* Problem paprameters */" << std::endl
+			  << "ProblemType: " << ProblemType << std::endl
 
-			  << "/* Units [cgs] */\n"
-			  << "LengthUnit: " << LengthUnit << "\n"
-			  << "TimeUnit: " << TimeUnit << "\n"
-			  << "DensityUnit: " << DensityUnit << "\n"
+			  << "/* Units [cgs] */" << std::endl
+			  << "LengthUnit: " << LengthUnit << std::endl
+			  << "TimeUnit: " << TimeUnit << std::endl
+			  << "DensityUnit: " << DensityUnit << std::endl
 
-			  << "/* Hydrodynamics parameter */\n"
-			  //<< "Solver: " << Solver << "\n" // ERROR: use a template
-			  //printf("RiemannSolver: %d\n", (int)RiemannSolver);
-			  << "RiemannIteration: " << RiemannIteration << "\n"
-			  //printf("BoundaryCondition: %d\n", (int)BoundaryCondition);
+			  << "/* Hydrodynamics parameter */" << std::endl
+			  << "Solver: " << static_cast<int>((Types::HydroType)Solver) << std::endl // use a map and operator overloading??
+			  << "RiemannSolver: " << static_cast<int>((Types::RiemannType)RiemannSolver) << std::endl
+			  << "RiemannIteration: " << RiemannIteration << std::endl
+			  << "BoundaryCondition: " << static_cast<int>((Types::BoundaryType)BoundaryCondition) << std::endl
 
-			  << "/* Thermal dynamics parameter */\n"
-			  << "EOSType: " << EOSType << "\n"
-			  << "Gamma: " << Gamma << "\n"
-			  << "Mu: " << Mu << "\n"
+			  << "/* Thermal dynamics parameter */" << std::endl
+			  << "EOSType: " << EOSType << std::endl
+			  << "Gamma: " << Gamma << std::endl
+			  << "Mu: " << Mu << std::endl
 
-			  << "/* Time step */\n"
-			  << "CourantNumber: " << CourantNumber << "\n"
-			  << "StopTime: " << StopTime << "\n"
+			  << "/* Time step */" << std::endl
+			  << "CourantNumber: " << CourantNumber << std::endl
+			  << "StopTime: " << StopTime << std::endl
 			  << "StopCycle: " << StopCycle << std::endl;
 }

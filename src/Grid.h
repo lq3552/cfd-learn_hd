@@ -28,7 +28,7 @@ class Grid
 		class GodunovSolverFirstOrder;
 		class GodunovSolverSecondOrder;
 	
-		friend int SetParameter(Grid &grid, FILE* fptr);
+		friend int SetParameter(Grid &grid, std::fstream& parameterFile);
 		friend int EOS(Grid &grid, double *p,double *cs);
 };
 

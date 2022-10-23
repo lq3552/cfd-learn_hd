@@ -1,6 +1,5 @@
 #include "Global.h"
 using namespace Types;
-#include <fstream>
 
 Grid::~Grid() // it is not needed for a hydro solver structured like ours; just for learning
 {
@@ -23,12 +22,12 @@ void Grid::SetMetaData(int i_GridRank,int i_GridDimension[],int i_NumberofGhostZ
 
 void Grid::PrintMetaData()
 {
-	std::cout << "/* Top grid */\n"
-			  << "GridRank: " << GridRank << "\n"
-	          << "NumberOfBaryonFields: " << NumberofBaryonFields << std::endl;
+	std::cout << "/* Top grid */" << std::endl
+			  << "GridRank: " << GridRank << std::endl;
 	for (int i = 0; i < GridRank; i++)
 		std::cout << "GridDimension: " << GridDimension[i];
-	std::cout << "\n"
+	std::cout << std::endl 
+			  << "NumberOfBaryonFields: " << NumberofBaryonFields << std::endl
 			  << "NumberOfGhostZones: " << NumberofGhostZones << std::endl;
 }
 

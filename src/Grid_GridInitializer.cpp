@@ -23,7 +23,7 @@ int Grid::GridInitializer::AllocateGrid()
 	}
 	catch(std::exception &e)
 	{
-		std::cout << "Nuke detected!\n";
+		std::cout << "Nuke detected!" << std::endl;
 		return FAIL;
 	}
 

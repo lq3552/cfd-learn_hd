@@ -28,7 +28,7 @@ int Grid::GodunovSolverFirstOrder::EvolveGodunov()
 		if (grid.HydroTimeStep(dx, time, cs, dt) != SUCCESS)
 			RETURNFAIL("failed to compute time step!");
 		time += dt;
-		std::cout << "cycle = " << (i + 1) << "dt = " << dt << "t = " << time << std::endl;
+		std::cout << "cycle = " << (i + 1) << " dt = " << dt << " t = " << time << std::endl;
 		/* compute interface numerical fluxes */
 		if (ComputeFlux() != SUCCESS)
 			RETURNFAIL("failed to compute time step!");

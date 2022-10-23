@@ -5,19 +5,19 @@
  */
 
 #include "Global.h"
-#include <fstream>
 
 int main(int argc, char *argv[])
 {
 	Grid grid;
-	FILE *fptr;
+	std::fstream parameterFile;
 
 	if (argc > 1)
 	{
 		std::cout << "Reading parameter file to set global parameters..." << std::endl;
-		if ((fptr = fopen(argv[1],"r")) == NULL)
+		parameterFile.open(argv[1], std::fstream::in);
+		if (!parameterFile)
 			RETURNFAIL("failed to open parameter file!");
-		if (SetParameter(grid, fptr) != SUCCESS)
+		if (SetParameter(grid, parameterFile) != SUCCESS)
 			RETURNFAIL("failed to set global parameters from file!");
 		std::cout << "Setting parameters succeeds!" << std::endl;
 	}
