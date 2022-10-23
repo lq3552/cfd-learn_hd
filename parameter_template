@@ -13,7 +13,7 @@ TimeUnit = 1.0
 DensityUnit = 1.0
 
 /* Hydrodynamics parameter */
-Solver = 1
+Solver = 0
 RiemannSolver = 0
 RiemannIteration = 20
 BoundaryCondition = 1

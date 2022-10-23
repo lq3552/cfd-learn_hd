@@ -48,27 +48,27 @@ void Global::SetGlobalParameter(int i_ProblemType,
 
 void Global::PrintGlobalParameter()
 {
-	printf("/* Problem paprameters */\n");
-	printf("ProblemType: %d\n", (int)ProblemType);
+	std::cout << "/* Problem paprameters */" << std::endl
+			  << "ProblemType: " << ProblemType << std::endl
 
-	printf("/* Units [cgs] */\n");
-	printf("LengthUnit: %g\n", (double)LengthUnit);
-	printf("TimeUnit: %g\n", (double)TimeUnit);
-	printf("DensityUnit: %g\n", (double)DensityUnit);
+			  << "/* Units [cgs] */" << std::endl
+			  << "LengthUnit: " << LengthUnit << std::endl
+			  << "TimeUnit: " << TimeUnit << std::endl
+			  << "DensityUnit: " << DensityUnit << std::endl
 
-	printf("/* Hydrodynamics parameter */\n");
-	//printf("Solver: %d\n", (int)Solver);
-	//printf("RiemannSolver: %d\n", (int)RiemannSolver);
-	printf("RiemannIteration: %d\n", (int)RiemannIteration);
-	//printf("BoundaryCondition: %d\n", (int)BoundaryCondition);
+			  << "/* Hydrodynamics parameter */" << std::endl
+			  << "Solver: " << static_cast<int>((Types::HydroType)Solver) << std::endl // use a map and operator overloading??
+			  << "RiemannSolver: " << static_cast<int>((Types::RiemannType)RiemannSolver) << std::endl
+			  << "RiemannIteration: " << RiemannIteration << std::endl
+			  << "BoundaryCondition: " << static_cast<int>((Types::BoundaryType)BoundaryCondition) << std::endl
 
-	printf("/* Thermal dynamics parameter */\n");
-	printf("EOSType: %d\n", (int)EOSType);
-	printf("Gamma: %g\n", (float)Gamma);
-	printf("Mu: %g\n", (float)Mu);
+			  << "/* Thermal dynamics parameter */" << std::endl
+			  << "EOSType: " << EOSType << std::endl
+			  << "Gamma: " << Gamma << std::endl
+			  << "Mu: " << Mu << std::endl
 
-	printf("/* Time step */\n");
-	printf("CourantNumber: %g\n", (float)CourantNumber);
-	printf("StopTime: %g\n", (double)StopTime);
-	printf("StopCycle: %d\n", (int)StopCycle);
+			  << "/* Time step */" << std::endl
+			  << "CourantNumber: " << CourantNumber << std::endl
+			  << "StopTime: " << StopTime << std::endl
+			  << "StopCycle: " << StopCycle << std::endl;
 }

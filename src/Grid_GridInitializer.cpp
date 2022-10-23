@@ -21,9 +21,9 @@ int Grid::GridInitializer::AllocateGrid()
 				grid.GridData[i][j] = 0.0;
 		}
 	}
-	catch(exception &e)
+	catch(std::exception &e)
 	{
-		printf("Nuke detected!\n");
+		std::cout << "Nuke detected!" << std::endl;
 		return FAIL;
 	}
 

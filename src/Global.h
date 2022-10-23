@@ -2,18 +2,16 @@
 #define GLOBAL_H
 
 #include <math.h>
-#include <stdio.h>
 #include <iostream>
+#include <fstream>
 #include <exception>
-using namespace std;
 
 #define SUCCESS 0
 #define FAIL 1
 #define TINY 1e-16
 #define TOL 1e-6
-#define MAX_LINE_LENGTH 100
 #define MAX_DIMENSION 3
-#define RETURNFAIL(x) {printf("ERROR: %s",x);return FAIL;}
+#define RETURNFAIL(x) {std::cout << "ERROR: " << (x) << std::endl; return FAIL;}
 
 #include "Property.h"
 #include "typedefs.h"
@@ -59,7 +57,7 @@ class Global
 								 int i_EOSType, float i_Gamma, float i_Mu,
 								 float i_CourantNumber, double i_StopTime, int i_StopCycle);
 
-	friend int SetParameter(Grid &grid, FILE *fptr);
+	friend int SetParameter(Grid &grid, std::fstream& parameterFile);
 };
 
 #endif

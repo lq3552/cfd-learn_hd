@@ -3,12 +3,14 @@
    create date : Nov. 30, 2016*/
 
 #include "Global.h"
+#include <string>
+#include <sstream>
+#include "SetParameter.h"
 
-int SetParameter(Grid &grid, FILE* fptr)
+int SetParameter(Grid &grid, std::fstream& parameterFile)
 {
-	// future development: identify optional/compelling parameters, comment, dummy space
-	char line[MAX_LINE_LENGTH];
-	int ret = 1;
+	// future development: identify optional/compelling parameters
+	std::string line;
 	int comment_count = 0;
 
 	/* Default Global parameters */
@@ -35,35 +37,28 @@ int SetParameter(Grid &grid, FILE* fptr)
 	int NumberofBaryonFields = 4;
 
 	/* read parameter file */
-	rewind(fptr);
-	while ((fgets(line, MAX_LINE_LENGTH,fptr) != NULL) && (comment_count<2))
+	while ((std::getline(parameterFile, line)) && (comment_count < 2))
 	{
-		ret = 0;
-		/* read parameters */
-		ret += sscanf(line,"ProblemType = %d",&ProblemType);
-		ret += sscanf(line,"GridRank = %d",&GridRank);
-		if (GridRank == 1)
-			ret += sscanf(line,"GridDimension = %d",&GridDimension[0]);
-		else if (GridRank == 2)
-			ret += sscanf(line,"GridDimension = %d %d",&GridDimension[0],&GridDimension[1]);
-		else
-			ret += sscanf(line,"GridDimension = %d %d %d",&GridDimension[0],&GridDimension[1],&GridDimension[2]);
-		ret += sscanf(line,"NumberofGhostZones = %d",&NumberofGhostZones);
-		ret += sscanf(line,"NumberofBaryonFields = %d",&NumberofBaryonFields);
-		ret += sscanf(line,"LengthUnit = %lf",&LengthUnit);
-		ret += sscanf(line,"TimeUnit = %lf",&TimeUnit);
-		ret += sscanf(line,"DensityUnit = %lf",&DensityUnit);
-		/* Hydro -related parameter */
-		ret += sscanf(line,"Solver = %d",&Solver);
-		ret += sscanf(line,"RiemannSolver = %d",&RiemannSolver);
-		ret += sscanf(line,"RiemannIteration = %d",&RiemannIteration);
-		ret += sscanf(line,"BoundaryCondition = %d",&BoundaryCondition); // Here you can see no type safety using plain C I/O, it explains why you should use C++ I/O
-		ret += sscanf(line,"EOSType = %d",&EOSType);
-		ret += sscanf(line,"Gamma = %f",&Gamma);
-		ret += sscanf(line,"Mu = %f",&Mu);
-		ret += sscanf(line,"CourantNumber = %f",&CourantNumber);
-		ret += sscanf(line,"StopTime = %lf",&StopTime);
-		ret += sscanf(line,"StopCycle = %d",&StopCycle);
+		/* Storing the whole line into string stream */
+		ReadParameterFromLine<int>(line, "ProblemType", ProblemType);
+		ReadParameterFromLine<int>(line, "GridRank", GridRank);
+		for (int i = 0; i < GridRank; i++)
+			ReadParameterFromLine<int>(line, "GridDimension", GridDimension[i], i + 1);
+		ReadParameterFromLine<int>(line, "NumberofGhostZones", NumberofGhostZones);
+		ReadParameterFromLine<int>(line, "NumberofBaryonFields", NumberofBaryonFields);
+		ReadParameterFromLine<double>(line, "LengthUnit", LengthUnit);
+		ReadParameterFromLine<double>(line, "TimeUnit", TimeUnit);
+		ReadParameterFromLine<double>(line, "DensityUnit", DensityUnit);
+		ReadParameterFromLine<HydroType>(line, "Solver", Solver);
+		ReadParameterFromLine<RiemannType>(line, "RiemannSolver", RiemannSolver);
+		ReadParameterFromLine<int>(line, "RiemannIteration", RiemannIteration);
+		ReadParameterFromLine<BoundaryType>(line, "BoundaryCondition", BoundaryCondition);
+		ReadParameterFromLine<int>(line, "EOSType", EOSType);
+		ReadParameterFromLine<float>(line, "Gamma", Gamma);
+		ReadParameterFromLine<float>(line, "Mu", Mu);
+		ReadParameterFromLine<float>(line, "CourantNumber", CourantNumber);
+		ReadParameterFromLine<double>(line, "StopTime", StopTime);
+		ReadParameterFromLine<int>(line, "StopCycle", StopCycle);
 	}
 
 	Global::SetGlobalParameter(ProblemType,

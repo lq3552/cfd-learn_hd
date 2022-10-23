@@ -3,6 +3,6 @@
 #ifndef PROTO_H
 #define PROTO_H
 
-int SetParameter(Grid &grid, FILE* fptr);
+int SetParameter(Grid &grid, std::fstream& parameterFile);
 
 #endif

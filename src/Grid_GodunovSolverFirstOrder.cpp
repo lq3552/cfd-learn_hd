@@ -18,29 +18,29 @@ int Grid::GodunovSolverFirstOrder::EvolveGodunov()
 {
 	/* First-order Godunov Solver, currently only 1st order, 1 D*/
 	if (EOS(grid, p ,cs) != SUCCESS)
-		RETURNFAIL("unable to calculate p and cs from d and e!\n");
+		RETURNFAIL("unable to calculate p and cs from d and e!");
 	for (int i = 0; i < Global::StopCycle; i++)
 	{
 		/* Set boundary conditions */
 		if (grid.SetBoundary(p, cs, U) != SUCCESS)
-			RETURNFAIL("failed to apply boundary condition!\n");
+			RETURNFAIL("failed to apply boundary condition!");
 		/* CFL-based condition */
 		if (grid.HydroTimeStep(dx, time, cs, dt) != SUCCESS)
-			RETURNFAIL("failed to compute time step!\n");
+			RETURNFAIL("failed to compute time step!");
 		time += dt;
-		printf("cycle = %d, dt = %f, t = %f\n", i+1, dt, time);
+		std::cout << "cycle = " << (i + 1) << " dt = " << dt << " t = " << time << std::endl;
 		/* compute interface numerical fluxes */
 		if (ComputeFlux() != SUCCESS)
-			RETURNFAIL("failed to compute time step!\n");
+			RETURNFAIL("failed to compute time step!");
 		if (UpdateState() != SUCCESS)
-			RETURNFAIL("failed to update state!\n");
+			RETURNFAIL("failed to update state!");
 		if (EOS(grid, p ,cs) != SUCCESS)
-			RETURNFAIL("unable to calculate p and cs from d and e!\n");
+			RETURNFAIL("unable to calculate p and cs from d and e!");
 		if (fabs(time - Global::StopTime) < TINY)
 			break;
 	}
 
-	printf("Computation complete!\n");
+	std::cout << "Computation complete!" << std::endl;
 	return SUCCESS;
 }
 
@@ -64,11 +64,11 @@ int Grid::GodunovSolverFirstOrder::ComputeFlux()
 		if (Global::RiemannSolver == RiemannType::EXACT)
 		{
 			if (RiemannSolver(WL, cL, WR, cR, WS).RiemannExact() != SUCCESS)
-				RETURNFAIL("failed to compute flux via Remann Solver!\n");
+				RETURNFAIL("failed to compute flux via Remann Solver!");
 		}
 		else
 		{
-			RETURNFAIL("unsupported Riemann Solver\n");
+			RETURNFAIL("unsupported Riemann Solver");
 		}
 		/* convert state to flux */
 		dS = WS[0];
