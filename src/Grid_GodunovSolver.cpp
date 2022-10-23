@@ -42,6 +42,8 @@ Grid::GodunovSolver::GodunovSolver(Grid &grid) : grid(grid)
 		F[1][i] = 0.0;
 		F[2][i] = 0.0;
 	}
+
+	std::cout << "Memory allocated for Godunov solver!" << endl;
 }
 
 Grid::GodunovSolver::~GodunovSolver()
@@ -56,6 +58,8 @@ Grid::GodunovSolver::~GodunovSolver()
 	}
 	delete[] U;
 	delete[] F;
+
+	std::cout << "Memory allocated via Godunov solver is cleaned up!" << endl;
 }
 
 int Grid::GodunovSolver::UpdateState()
