@@ -1,29 +1,12 @@
 /* Implementation of Global class */
 
 #include "Global.h"
-
-/* static members */
-Property<int>    Global::ProblemType;
-Property<double> Global::LengthUnit;
-Property<double> Global::TimeUnit;
-Property<double> Global::DensityUnit;
-Property<int>    Global::Solver;
-Property<int>    Global::RiemannSolver;
-Property<int>    Global::RiemannIteration;
-Property<int>    Global::BoundaryCondition;
-Property<int>    Global::EOSType;
-Property<float>  Global::Gamma;
-Property<float>  Global::Mu;
-Property<float>  Global::CourantNumber;
-Property<double> Global::StopTime;
-Property<int>    Global::StopCycle;
-Property<char>* Global::DataDump;
-Property<double> Global::dtDump;
+using namespace Types;
 
 /* static methods */
 void Global::SetGlobalParameter(int i_ProblemType,
 		                  double i_LengthUnit, double i_TimeUnit, double i_DensityUnit,
-						  int i_Solver, int i_RiemannSolver, int i_RiemannIteration, int i_BoundaryCondition,
+						  HydroType i_Solver, RiemannType i_RiemannSolver, int i_RiemannIteration, BoundaryType i_BoundaryCondition,
 						  int i_EOSType, float i_Gamma, float i_Mu,
 						  float i_CourantNumber, double i_StopTime, int i_StopCycle)
 {
@@ -74,10 +57,10 @@ void Global::PrintGlobalParameter()
 	printf("DensityUnit: %g\n", (double)DensityUnit);
 
 	printf("/* Hydrodynamics parameter */\n");
-	printf("Solver: %d\n", (int)Solver);
-	printf("RiemannSolver: %d\n", (int)RiemannSolver);
+	//printf("Solver: %d\n", (int)Solver);
+	//printf("RiemannSolver: %d\n", (int)RiemannSolver);
 	printf("RiemannIteration: %d\n", (int)RiemannIteration);
-	printf("BoundaryCondition: %d\n", (int)BoundaryCondition);
+	//printf("BoundaryCondition: %d\n", (int)BoundaryCondition);
 
 	printf("/* Thermal dynamics parameter */\n");
 	printf("EOSType: %d\n", (int)EOSType);

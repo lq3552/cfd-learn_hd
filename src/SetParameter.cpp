@@ -16,10 +16,11 @@ int SetParameter(Grid &grid, FILE* fptr)
 	double LengthUnit = 1.0;
 	double TimeUnit = 1.0;
 	double DensityUnit = 1.0;
-	int Solver = Types::HD;
-	int RiemannSolver = Types::EXACT;
+	using namespace Types;
+	HydroType Solver = HydroType::HD_1ST;
+	RiemannType RiemannSolver = RiemannType::EXACT;
 	int RiemannIteration = 20;
-	int BoundaryCondition = Types::OUTFLOW;
+	BoundaryType BoundaryCondition = BoundaryType::OUTFLOW;
 	int EOSType = 1;
 	float Gamma = 1.4;
 	float Mu = 0.6;
@@ -33,6 +34,7 @@ int SetParameter(Grid &grid, FILE* fptr)
 	int NumberofGhostZones = 1;
 	int NumberofBaryonFields = 4;
 
+	/* read parameter file */
 	rewind(fptr);
 	while ((fgets(line, MAX_LINE_LENGTH,fptr) != NULL) && (comment_count<2))
 	{
@@ -55,7 +57,7 @@ int SetParameter(Grid &grid, FILE* fptr)
 		ret += sscanf(line,"Solver = %d",&Solver);
 		ret += sscanf(line,"RiemannSolver = %d",&RiemannSolver);
 		ret += sscanf(line,"RiemannIteration = %d",&RiemannIteration);
-		ret += sscanf(line,"BoundaryCondition = %d",&BoundaryCondition);
+		ret += sscanf(line,"BoundaryCondition = %d",&BoundaryCondition); // Here you can see no type safety using plain C I/O, it explains why you should use C++ I/O
 		ret += sscanf(line,"EOSType = %d",&EOSType);
 		ret += sscanf(line,"Gamma = %f",&Gamma);
 		ret += sscanf(line,"Mu = %f",&Mu);

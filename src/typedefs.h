@@ -5,9 +5,6 @@
 #define TYPEDEFS_H
 
 typedef int FieldType;
-typedef int BoundaryType;
-typedef int HydroType;
-typedef int RiemannType;
 
 namespace Types
 {
@@ -21,20 +18,27 @@ namespace Types
 		Vel3Num = 5;
 
 	/* Boundary Condition */
-	const BoundaryType
+	enum class BoundaryType
+	{
 		PERIODIC = 0,
-		OUTFLOW = 1;
+		OUTFLOW = 1
+	};
 
 	/* Hydro Solver Framework */
-	const HydroType
-		HD = 0,
-		MHDCT = 1;
+	enum class HydroType
+	{
+		HD_1ST = 0,
+		HD_2ND = 1,
+		MHDCT = 2
+	};
 
 	/* Riemann Solver */
-	const RiemannType
+	enum class RiemannType
+	{
 		EXACT = 0,
 		HLLC  = 1,
-		HLLD  = 2;
+		HLLD  = 2
+	};
 }
 
 #endif
