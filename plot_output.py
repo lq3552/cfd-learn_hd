@@ -37,3 +37,4 @@ for i in range(4):
 		ax.set_xlabel("Position")
 
 plt.subplots_adjust(hspace = 0)
+plt.savefig("test_output.png", dpi = 300)

@@ -7,5 +7,7 @@ OBJS = \
 	Grid_SetBoundary.o\
 	Grid_TimeStep.o\
 	Grid_GodunovSolver.o\
+	Grid_GodunovSolverFirstOrder.o\
+	Grid_GodunovSolverSecondOrder.o\
 	RiemannSolver.o\
 	main.o\

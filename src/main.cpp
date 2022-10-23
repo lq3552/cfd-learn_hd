@@ -28,10 +28,18 @@ int main(int argc, char *argv[])
 	if (Grid::GridInitializer(grid).TestInitialize(Global::ProblemType) != SUCCESS)
 		RETURNFAIL("failed to initialize problem!\n");
 
-	if (Global::Solver == Types::HD)
+	switch (Global::Solver)
 	{
-		if (Grid::GodunovSolver(grid).EvolveGodunovFirstOrder() != SUCCESS)
-			RETURNFAIL("failure in Godunov solver!\n");
+		case Types::HydroType::HD_1ST: 
+			if (Grid::GodunovSolverFirstOrder(grid).EvolveGodunov() != SUCCESS)
+				RETURNFAIL("failure in first-order Godunov solver!\n");
+			break;
+		case Types::HydroType::HD_2ND: 
+			if (Grid::GodunovSolverSecondOrder(grid).EvolveGodunov() != SUCCESS)
+				RETURNFAIL("failure in second-order Godunov solver!\n");
+			break;
+		default:
+			RETURNFAIL("unsupported solver!\n");
 	}
 
 	if (grid.Output() != SUCCESS)

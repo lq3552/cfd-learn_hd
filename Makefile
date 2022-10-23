@@ -30,8 +30,8 @@ EXE := Hydro.exe
 
 # set compilers and options based on system
 include Make.config.system
-ifeq ($(SYSTYPE),"macintosh-sierra")
-  SYSFILE = Make.system.macintosh-sierra
+ifeq ($(SYSTYPE),"macintosh-monterey")
+  SYSFILE = Make.system.macintosh-monterey
   include $(SYSFILE)
 else
   CXX = g++
@@ -56,10 +56,10 @@ all: build
 build: $(EXE)
 
 $(EXE): $(OBJS)
-	$(CXX) $(OPTIMIZE) $(OBJS) -o $(EXE)
+	$(CXX) $(STD) $(OPTIMIZE) $(OBJS) -o $(EXE)
 
 $(BUILD_DIR)/%.o : $(SRC_DIR)/%.cpp $(INCL)
-	$(CXX) $(OPTION) $< -o $@
+	$(CXX) $(STD) $(OPTION) $< -o $@
 
 # show system information
 show-sys: $(SYSFILE)

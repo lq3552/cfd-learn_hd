@@ -6,6 +6,7 @@
 
 # compiler settings
 CXX = g++
+STD = -std=c++17
 CC = gcc
 OPTIMIZE = -Wall -g
 OPTION = -Wall -c

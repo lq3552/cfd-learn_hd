@@ -15,7 +15,7 @@ class Grid
 	
 		int SetBoundary(double *p, double *cs, double **U);
 		void SetGhostValue(int i, int i_bound, double *p, double *cs, double **U);
-		int Hydro_TimeStep(double dx, double time, double *cs, double &dt);
+		int HydroTimeStep(double dx, double time, double *cs, double &dt);
 		void SetMetaData(int i_GridRank, int i_GridDimension[], int i_NumberofGhostZones, int i_NumberofBaryonFields);
 	
 	public:
@@ -25,6 +25,8 @@ class Grid
 
 		class GridInitializer;
 		class GodunovSolver;
+		class GodunovSolverFirstOrder;
+		class GodunovSolverSecondOrder;
 	
 		friend int SetParameter(Grid &grid, FILE* fptr);
 		friend int EOS(Grid &grid, double *p,double *cs);
@@ -43,9 +45,9 @@ class Grid::GridInitializer
 		int TestInitialize(int setNo);
 };
 
-class Grid::GodunovSolver
+class Grid::GodunovSolver // abstract class with at least one pure virtual method
 {
-	private:
+	protected:
 		Grid &grid; // reference to top grid
 		double *d, *E, *e, *u; // alias of density, total energy, internal energy, velocity
 		double *p, *cs; // pressure, sound speed
@@ -56,9 +58,25 @@ class Grid::GodunovSolver
 	public:
 		GodunovSolver(Grid &p_grid);
 		~GodunovSolver();
-		int EvolveGodunovFirstOrder();
-		int FluxFirstOrder();
-		int Hydro_Update();
+		virtual int EvolveGodunov() = 0; // pure virtual
+		virtual int ComputeFlux() = 0;
+		int UpdateState();
+};
+
+class Grid::GodunovSolverFirstOrder : public Grid::GodunovSolver
+{
+	public:
+		GodunovSolverFirstOrder(Grid &p_grid);
+		int EvolveGodunov();
+		int ComputeFlux();
+};
+
+class Grid::GodunovSolverSecondOrder : public Grid::GodunovSolver
+{
+	public:
+		GodunovSolverSecondOrder(Grid &p_grid);
+		int EvolveGodunov();
+		int ComputeFlux();
 };
 
 #endif
