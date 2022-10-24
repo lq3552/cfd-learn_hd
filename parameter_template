@@ -1,12 +1,6 @@
 /* Problem paprameters */
 ProblemType = 0
 
-/* Top grid parameters */
-GridRank = 1
-GridDimension = 1000
-NumberofGhostZones = 1
-NumberofBaryonFields = 4
-
 /* Units [cgs] */
 LengthUnit = 1.0
 TimeUnit = 1.0
@@ -27,3 +21,9 @@ Mu = 0.6
 CourantNumber = 0.4
 StopTime = 0.25
 StopCycle = 1000000
+
+/* Top grid parameters */
+GridRank = 1
+GridDimension = 1000
+NumberofGhostZones = 1
+NumberofBaryonFields = 4

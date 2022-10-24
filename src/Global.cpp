@@ -4,11 +4,11 @@
 using namespace Types;
 
 /* static methods */
-void Global::SetGlobalParameter(int i_ProblemType,
-		                  double i_LengthUnit, double i_TimeUnit, double i_DensityUnit,
-						  HydroType i_Solver, RiemannType i_RiemannSolver, int i_RiemannIteration, BoundaryType i_BoundaryCondition,
-						  int i_EOSType, float i_Gamma, float i_Mu,
-						  float i_CourantNumber, double i_StopTime, int i_StopCycle)
+void Global::SetGlobalParameter(const int i_ProblemType,
+		                  const double i_LengthUnit, const double i_TimeUnit, const double i_DensityUnit,
+						  const HydroType i_Solver, const RiemannType i_RiemannSolver, const int i_RiemannIteration, const BoundaryType i_BoundaryCondition,
+						  const int i_EOSType, const float i_Gamma, const float i_Mu,
+						  const float i_CourantNumber, const double i_StopTime, const int i_StopCycle)
 {
 	ProblemType       = i_ProblemType;
 	LengthUnit        = i_LengthUnit;
