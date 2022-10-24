@@ -16,7 +16,7 @@ class Grid
 		int SetBoundary(double *p, double *cs, double **U);
 		void SetGhostValue(int i, int i_bound, double *p, double *cs, double **U);
 		int HydroTimeStep(double dx, double time, double *cs, double &dt);
-		void SetMetaData(int i_GridRank, int i_GridDimension[], int i_NumberofGhostZones, int i_NumberofBaryonFields);
+		void SetMetaData(const int i_GridRank, const int i_GridDimension[], const int i_NumberofGhostZones, const int i_NumberofBaryonFields);
 	
 	public:
 		~Grid(); // free dynamically allocated space

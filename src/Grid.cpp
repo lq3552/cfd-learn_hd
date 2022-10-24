@@ -11,7 +11,7 @@ Grid::~Grid() // it is not needed for a hydro solver structured like ours; just 
 	delete[] GridData;
 }
 
-void Grid::SetMetaData(int i_GridRank,int i_GridDimension[],int i_NumberofGhostZones,int i_NumberofBaryonFields)
+void Grid::SetMetaData(const int i_GridRank, const int i_GridDimension[], const int i_NumberofGhostZones, const int i_NumberofBaryonFields)
 {
 	GridRank = i_GridRank;
 	for (int i = 0; i < GridRank; i++)

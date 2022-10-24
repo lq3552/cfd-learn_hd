@@ -1,7 +1,8 @@
 /* template function to read the parameter from a line */
 
 template <typename T>
-void ReadParameterFromLine(std::string line, std::string keyword, T& parameter, int rank = 1)
+void ReadParameterFromLine(const std::string line, const std::string keyword,
+		T& parameter, std::map<std::string, int>& checklist, const int rank = 1)
 {
 	std::stringstream stream;
 	stream << line;
@@ -26,6 +27,7 @@ void ReadParameterFromLine(std::string line, std::string keyword, T& parameter, 
 				if (found == rank)
 				{
 					parameter = static_cast<T>(tempParameter);
+					checklist[keyword] += 1;
 					return;
 				}
 			}

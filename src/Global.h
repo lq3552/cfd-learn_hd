@@ -11,7 +11,7 @@
 #define TINY 1e-16
 #define TOL 1e-6
 #define MAX_DIMENSION 3
-#define RETURNFAIL(x) {std::cout << "ERROR: " << (x) << std::endl; return FAIL;}
+#define RETURNFAIL(x) {std::cerr << "ERROR: " << x << std::endl; return FAIL;}
 
 #include "Property.h"
 #include "typedefs.h"
@@ -51,11 +51,11 @@ class Global
 		static void PrintGlobalParameter();
 
 	private:
-		static void SetGlobalParameter(int i_ProblemType,
-				                 double i_LengthUnit, double i_TimeUnit, double i_DensityUnit,
-								 Types::HydroType i_Solver, Types::RiemannType i_RiemannSolver, int i_RiemannIteration, Types::BoundaryType i_BoundaryCondition,
-								 int i_EOSType, float i_Gamma, float i_Mu,
-								 float i_CourantNumber, double i_StopTime, int i_StopCycle);
+		static void SetGlobalParameter(const int i_ProblemType,
+				                 const double i_LengthUnit, const double i_TimeUnit, const double i_DensityUnit,
+								 const Types::HydroType i_Solver, const Types::RiemannType i_RiemannSolver, const int i_RiemannIteration, const Types::BoundaryType i_BoundaryCondition,
+								 const int i_EOSType, const float i_Gamma, const float i_Mu,
+								 const float i_CourantNumber, const double i_StopTime, const int i_StopCycle);
 
 	friend int SetParameter(Grid &grid, std::fstream& parameterFile);
 };
