@@ -42,7 +42,7 @@ int SetParameter(Grid &grid, std::fstream& parameterFile)
 		/* Storing the whole line into string stream */
 		ReadParameterFromLine<int>(line, "ProblemType", ProblemType);
 		ReadParameterFromLine<int>(line, "GridRank", GridRank);
-		for (int i = 0; i < GridRank; i++)
+		for (int i = 0; i < MAX_DIMENSION; i++)
 			ReadParameterFromLine<int>(line, "GridDimension", GridDimension[i], i + 1);
 		ReadParameterFromLine<int>(line, "NumberofGhostZones", NumberofGhostZones);
 		ReadParameterFromLine<int>(line, "NumberofBaryonFields", NumberofBaryonFields);
