@@ -65,7 +65,7 @@ Grid::GodunovSolver::~GodunovSolver()
 int Grid::GodunovSolver::EvolveGodunov()
 {
 	/* First-order Godunov Solver, currently only 1st order, 1 D*/
-	if (EOS(grid, p ,cs) != SUCCESS)
+	if (gEOS(grid, p ,cs) != SUCCESS)
 		RETURNFAIL("unable to calculate p and cs from d and e!");
 	for (int i = 0; i < Global::StopCycle; i++)
 	{
@@ -82,7 +82,7 @@ int Grid::GodunovSolver::EvolveGodunov()
 			RETURNFAIL("failed to compute time step!");
 		if (UpdateState() != SUCCESS)
 			RETURNFAIL("failed to update state!");
-		if (EOS(grid, p ,cs) != SUCCESS)
+		if (gEOS(grid, p ,cs) != SUCCESS)
 			RETURNFAIL("unable to calculate p and cs from d and e!");
 		if (fabs(time - Global::StopTime) < TINY)
 			break;
@@ -101,7 +101,8 @@ int Grid::GodunovSolver::ComputeFlux()
 
 	for (int i = grid.NumberofGhostZones - 1; i < grid.GridDimension[0] + grid.NumberofGhostZones; i ++)
 	{
-		ReconstructInterface(i, WL, WR, cL, cR);
+		ReconstructInterface(i    , WL, cL,  1);
+		ReconstructInterface(i + 1, WR, cR, -1);
 		if (Global::RiemannSolver == RiemannType::EXACT)
 		{
 			if (RiemannSolver(WL, cL, WR, cR, WS).RiemannExact() != SUCCESS)

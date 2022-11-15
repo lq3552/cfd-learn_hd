@@ -14,14 +14,10 @@ Grid::GodunovSolverFirstOrder::GodunovSolverFirstOrder(Grid &grid) : Grid::Godun
 {
 }
 
-void Grid::GodunovSolverFirstOrder::ReconstructInterface(int i, double* const WL, double* const WR, double &cL, double &cR)
+void Grid::GodunovSolverFirstOrder::ReconstructInterface(int i, double* const W, double& c, int sign = 1)
 {
-	WL[0] = d[i];
-	WL[1] = u[i];
-	WL[2] = p[i];
-	cL = cs[i];
-	WR[0] = d[i + 1];
-	WR[1] = u[i + 1];
-	WR[2] = p[i + 1];
-	cR = cs[i + 1];
+	W[0] = d[i];
+	W[1] = u[i];
+	W[2] = p[i];
+	c = cs[i];
 }

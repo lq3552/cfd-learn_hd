@@ -3,9 +3,10 @@
 #include "Global.h"
 using namespace Types;
 
-//EOS's relation with Grid is a bit messy! improbe it!
+//TODO: EOS's relation with Grid is a bit messy! refactor it!
 
-int EOS(Grid &grid, double *p,double *cs)
+/* compute pressure and speed of sound from grid data*/
+int gEOS(Grid &grid, double *p,double *cs)
 {// Only support ideal gas for now
 	int size=1;
 	for (int i = 0; i < grid.GridRank; i++)
@@ -23,6 +24,7 @@ int EOS(Grid &grid, double *p,double *cs)
 		return FAIL;
 }
 
+/* compute specific internal energy and speed of sound from density and pressure */
 int pEOS(double d, double p, double &e, double &cs)
 {// Only support ideal gas for now
 	if (Global::EOSType == 1)
