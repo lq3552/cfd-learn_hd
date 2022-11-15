@@ -55,28 +55,30 @@ class Grid::GodunovSolver // abstract class with at least one pure virtual metho
 		double **F; // interface fluxes
 		double time, dx, dt;
 
+		int ComputeFlux();
+		virtual void ReconstructInterface(int, double* const, double* const, double&, double&) = 0;
+		int UpdateState();
+
 	public:
 		GodunovSolver(Grid &p_grid);
 		~GodunovSolver();
-		virtual int EvolveGodunov() = 0; // pure virtual
-		virtual int ComputeFlux() = 0;
-		int UpdateState();
+		int EvolveGodunov();
 };
 
 class Grid::GodunovSolverFirstOrder : public Grid::GodunovSolver
 {
+	protected:
+		void ReconstructInterface(int i, double* const WL, double* const WR, double &cL, double &cR);
 	public:
 		GodunovSolverFirstOrder(Grid &p_grid);
-		int EvolveGodunov();
-		int ComputeFlux();
 };
 
 class Grid::GodunovSolverSecondOrder : public Grid::GodunovSolver
 {
+	protected:
+		void ReconstructInterface(int i, double* const WL, double* const WR, double &cL, double &cR);
 	public:
 		GodunovSolverSecondOrder(Grid &p_grid);
-		int EvolveGodunov();
-		int ComputeFlux();
 };
 
 #endif
