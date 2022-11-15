@@ -15,29 +15,19 @@ Grid::GodunovSolverSecondOrder::GodunovSolverSecondOrder(Grid &grid) : Grid::God
 {
 }
 
-void Grid::GodunovSolverSecondOrder::ReconstructInterface(int i, double* const WL, double* const WR, double &cL, double &cR)
+void Grid::GodunovSolverSecondOrder::ReconstructInterface(int i, double* const W, double &c, int sign = 1)
 {
 	/* i-1 i i+1 */
 	/* <-a   a-> */
-	int id; 
-	int j = i + 1;
-	//double dummy;
+	W[0] = d[i] + 0.5 * sign * vanLeer(i, d);
+	W[1] = u[i] + 0.5 * sign * vanLeer(i, u);
+	W[2] = p[i] + 0.5 * sign * vanLeer(i, p);
+	c  = cs[i] + 0.5 * sign * vanLeer(i, cs);
+}
 
-	id = u[i] + cs[i] > 0 ? i : i + 1;
-	WL[0] = d[i] + (d[id] - d[id - 1]) / 2.0;
-	WL[1] = u[i] + (u[id] - u[id - 1]) / 2.0;
-	WL[2] = p[i] + (p[id] - p[id - 1]) / 2.0;
-	cL = cs[i] + (cs[id] - cs[id - 1]) / 2.0;
-	id = u[j] + cs[j] > 0 ? j : j  + 1;
-	WR[0] = d[j] - (d[id] - d[id - 1]) / 2.0;
-	WR[1] = u[j] - (u[id] - u[id - 1]) / 2.0;
-	WR[2] = p[j] - (p[id] - p[id - 1]) / 2.0;
-	cR = cs[j] - (cs[id] - cs[id - 1]) / 2.0;
-	/*WL[1] = (d[i] * u[i] + (u[i + 1] * d[i + 1] - u[i] * d[i]) / 2.0) / WL[0];
-	WL[2] = p[i] + (p[i + 1] - p[i]) / 2.0;
-	pEOS(WL[0], WL[2], dummy, cL);
-	WR[0] = d[i + 1] + (d[i + 2] - d[i + 1]) / 2.0;
-	WR[1] = (d[i + 1] * u[i + 1] + (u[i + 2] * d[i + 2] - u[i + 1] * d[i + 1]) / 2.0) / WR[0];
-	WR[2] = p[i + 1] + (p[i + 2] - p[i + 1]) / 2.0;
-	pEOS(WR[0], WR[2], dummy, cR); */
-};
+double Grid::GodunovSolverSecondOrder::VanLeer(int i, double *q)
+{
+	double dL = q[i] - q[i - 1];
+	double dR = q[i + 1] - q[i];
+	return dL * dR > 0 ? 2.0 / (1.0 / dL + 1.0 / dR) : 0;
+}

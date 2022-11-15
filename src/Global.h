@@ -1,7 +1,7 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
-#include <math.h>
+#include <cmath>
 #include <iostream>
 #include <fstream>
 #include <exception>

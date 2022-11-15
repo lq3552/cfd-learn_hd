@@ -29,7 +29,7 @@ class Grid
 		class GodunovSolverSecondOrder;
 	
 		friend int SetParameter(Grid &grid, std::fstream& parameterFile);
-		friend int EOS(Grid &grid, double *p,double *cs);
+		friend int gEOS(Grid &grid, double *p,double *cs);
 };
 
 class Grid::GridInitializer
@@ -56,7 +56,7 @@ class Grid::GodunovSolver // abstract class with at least one pure virtual metho
 		double time, dx, dt;
 
 		int ComputeFlux();
-		virtual void ReconstructInterface(int, double* const, double* const, double&, double&) = 0;
+		virtual void ReconstructInterface(int, double* const, double&, int) = 0;
 		int UpdateState();
 
 	public:
@@ -68,7 +68,7 @@ class Grid::GodunovSolver // abstract class with at least one pure virtual metho
 class Grid::GodunovSolverFirstOrder : public Grid::GodunovSolver
 {
 	protected:
-		void ReconstructInterface(int i, double* const WL, double* const WR, double &cL, double &cR);
+		void ReconstructInterface(int i, double* const W, double &c, int);
 	public:
 		GodunovSolverFirstOrder(Grid &p_grid);
 };
@@ -76,7 +76,8 @@ class Grid::GodunovSolverFirstOrder : public Grid::GodunovSolver
 class Grid::GodunovSolverSecondOrder : public Grid::GodunovSolver
 {
 	protected:
-		void ReconstructInterface(int i, double* const WL, double* const WR, double &cL, double &cR);
+		inline double VanLeer(int i, double *q);
+		void ReconstructInterface(int i, double* const W, double &c, int);
 	public:
 		GodunovSolverSecondOrder(Grid &p_grid);
 };
