@@ -19,10 +19,10 @@ void Grid::GodunovSolverSecondOrder::ReconstructInterface(int i, double* const W
 {
 	/* i-1 i i+1 */
 	/* <-a   a-> */
-	W[0] = d[i] + 0.5 * sign * vanLeer(i, d);
-	W[1] = u[i] + 0.5 * sign * vanLeer(i, u);
-	W[2] = p[i] + 0.5 * sign * vanLeer(i, p);
-	c  = cs[i] + 0.5 * sign * vanLeer(i, cs);
+	W[0] = d[i] + 0.5 * sign * VanLeer(i, d);
+	W[1] = u[i] + 0.5 * sign * VanLeer(i, u);
+	W[2] = p[i] + 0.5 * sign * VanLeer(i, p);
+	c  = cs[i] + 0.5 * sign * VanLeer(i, cs);
 }
 
 double Grid::GodunovSolverSecondOrder::VanLeer(int i, double *q)
