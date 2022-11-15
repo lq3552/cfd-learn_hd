@@ -14,7 +14,7 @@ int EOS(Grid &grid, double *p,double *cs)
 	{ // ideal gas
 		for (int i = 0; i < size; i++)
 		{
-			p[i] = grid.GridData[TENum][i] * (Global::Gamma - 1);
+			p[i] = grid.GridData[GENum][i] * (Global::Gamma - 1);
 			cs[i] = sqrt(Global::Gamma * p[i] / grid.GridData[DensNum][i]);
 		}
 		return SUCCESS;

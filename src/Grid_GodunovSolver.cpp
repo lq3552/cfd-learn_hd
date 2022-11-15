@@ -99,7 +99,7 @@ int Grid::GodunovSolver::ComputeFlux()
 	double* const WS(new double[3]);// W = [d,u,p]
 	double dS, uS, pS, eS, ES, cS, cL, cR;
 
-	for (int i = 0; i < grid.GridDimension[0] + 2 * grid.NumberofGhostZones - 1; i ++)
+	for (int i = grid.NumberofGhostZones - 1; i < grid.GridDimension[0] + grid.NumberofGhostZones; i ++)
 	{
 		ReconstructInterface(i, WL, WR, cL, cR);
 		if (Global::RiemannSolver == RiemannType::EXACT)
