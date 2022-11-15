@@ -8,6 +8,10 @@ int Grid::SetBoundary(double *p, double *cs, double **U)
 	   1 - outflow
 	   2 - reflect (currently not supported)
 	*/
+
+	if (Global::Solver == HydroType::HD_2ND && NumberofGhostZones < 2)
+		RETURNFAIL("2nd order Godunov scheme must have at least 2 ghost zones");
+
 	int rear = GridDimension[0] + NumberofGhostZones -1;
 	if (Global::BoundaryCondition == BoundaryType::OUTFLOW)
 	{	// outflow
