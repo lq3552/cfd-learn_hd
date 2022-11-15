@@ -15,14 +15,7 @@ Grid::GodunovSolverSecondOrder::GodunovSolverSecondOrder(Grid &grid) : Grid::God
 {
 }
 
-int Grid::GodunovSolverSecondOrder::EvolveGodunov()
+void Grid::GodunovSolverSecondOrder::ReconstructInterface(int i, double* const WL, double* const WR, double &cL, double &cR)
 {
-	/* Second-order Godunov Solver */
-	std::cout << "Second-order Godunov scheme computation complete!" << std::endl;
-	return SUCCESS;
-}
-
-int Grid::GodunovSolverSecondOrder::ComputeFlux()
-{
-	return SUCCESS;
-}
+	return;
+};

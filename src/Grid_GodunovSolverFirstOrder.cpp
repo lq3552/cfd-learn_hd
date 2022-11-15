@@ -14,74 +14,14 @@ Grid::GodunovSolverFirstOrder::GodunovSolverFirstOrder(Grid &grid) : Grid::Godun
 {
 }
 
-int Grid::GodunovSolverFirstOrder::EvolveGodunov()
+void Grid::GodunovSolverFirstOrder::ReconstructInterface(int i, double* const WL, double* const WR, double &cL, double &cR)
 {
-	/* First-order Godunov Solver, currently only 1st order, 1 D*/
-	if (EOS(grid, p ,cs) != SUCCESS)
-		RETURNFAIL("unable to calculate p and cs from d and e!");
-	for (int i = 0; i < Global::StopCycle; i++)
-	{
-		/* Set boundary conditions */
-		if (grid.SetBoundary(p, cs, U) != SUCCESS)
-			RETURNFAIL("failed to apply boundary condition!");
-		/* CFL-based condition */
-		if (grid.HydroTimeStep(dx, time, cs, dt) != SUCCESS)
-			RETURNFAIL("failed to compute time step!");
-		time += dt;
-		std::cout << "cycle = " << (i + 1) << " dt = " << dt << " t = " << time << std::endl;
-		/* compute interface numerical fluxes */
-		if (ComputeFlux() != SUCCESS)
-			RETURNFAIL("failed to compute time step!");
-		if (UpdateState() != SUCCESS)
-			RETURNFAIL("failed to update state!");
-		if (EOS(grid, p ,cs) != SUCCESS)
-			RETURNFAIL("unable to calculate p and cs from d and e!");
-		if (fabs(time - Global::StopTime) < TINY)
-			break;
-	}
-
-	std::cout << "Computation complete!" << std::endl;
-	return SUCCESS;
-}
-
-int Grid::GodunovSolverFirstOrder::ComputeFlux()
-{
-	double* const WL(new double[3]); 
-	double* const WR(new double[3]);
-	double* const WS(new double[3]);// W = [d,u,p]
-	double dS, uS, pS, eS, ES, cS, cL, cR;
-
-	for (int i = 0; i < grid.GridDimension[0] + 2 * grid.NumberofGhostZones - 1; i ++)
-	{
-		WL[0] = d[i];
-		WL[1] = u[i];
-		WL[2] = p[i];
-		cL = cs[i];
-		WR[0] = d[i + 1];
-		WR[1] = u[i + 1];
-		WR[2] = p[i + 1];
-		cR = cs[i + 1];
-		if (Global::RiemannSolver == RiemannType::EXACT)
-		{
-			if (RiemannSolver(WL, cL, WR, cR, WS).RiemannExact() != SUCCESS)
-				RETURNFAIL("failed to compute flux via Remann Solver!");
-		}
-		else
-		{
-			RETURNFAIL("unsupported Riemann Solver");
-		}
-		/* convert state to flux */
-		dS = WS[0];
-		uS = WS[1];
-		pS = WS[2];
-		pEOS(dS, pS, eS, cS);
-		ES = eS + 0.5 * dS * uS * uS;
-		F[0][i] = dS * uS;
-		F[1][i] = dS * uS * uS + pS;
-		F[2][i] = uS * (ES + pS);
-	}
-	delete[] WL;
-	delete[] WR;
-	delete[] WS;
-	return SUCCESS;
+	WL[0] = d[i];
+	WL[1] = u[i];
+	WL[2] = p[i];
+	cL = cs[i];
+	WR[0] = d[i + 1];
+	WR[1] = u[i + 1];
+	WR[2] = p[i + 1];
+	cR = cs[i + 1];
 }
