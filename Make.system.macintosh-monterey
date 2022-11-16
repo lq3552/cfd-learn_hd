@@ -8,5 +8,5 @@
 CXX = g++
 STD = -std=c++17
 CC = gcc
-OPTIMIZE = -Wall -g
-OPTION = -Wall -c
+OPTIMIZE = -O3 -g
+OPTION = -Wall

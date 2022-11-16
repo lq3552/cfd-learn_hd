@@ -3,5 +3,7 @@ INCL = \
 	Global.h\
 	Grid.h\
 	RiemannSolver.h\
+	SetParameter.h\
 	proto.h\
+	Property.h\
 	typedefs.h
