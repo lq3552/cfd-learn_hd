@@ -13,6 +13,11 @@ RiemannSolver::RiemannSolver(const double* const WL, const double cL,
 	cR(cR),
 	WS(WS)
 {
+}
+
+/* static method to compute Gamma-related parameters */
+void RiemannSolver::ComputeGammaParam()
+{
 	G[0] = (Global::Gamma - 1.0) / (2.0 * Global::Gamma);
 	G[1] = (Global::Gamma + 1.0) / (2.0 * Global::Gamma);
 	G[2] = 2.0 * Global::Gamma / (Global::Gamma - 1.0);
@@ -23,9 +28,9 @@ RiemannSolver::RiemannSolver(const double* const WL, const double cL,
 	G[7] = Global::Gamma - 1.0;
 }
 
+/* compute star-region state */
 int RiemannSolver::RiemannExact()
 {
-	// compute star-region state
 	if (StarRegion() != SUCCESS)
 		RETURNFAIL("failed to compute state of star regions!");
 	if (Sampler() != SUCCESS)
@@ -34,9 +39,9 @@ int RiemannSolver::RiemannExact()
 }
 
 
+/* Purpose: solve pressure and velocity in star region */
 int RiemannSolver::StarRegion()
 {
-	// Purpose: solve pressure and velocity in star region
 	double uS, pS;
 	double change;
 	double fR, dfR, fL, dfL, du;
@@ -73,11 +78,11 @@ int RiemannSolver::StarRegion()
 	return SUCCESS;
 }
 
+/* provide a guess value for pressure pS in the star region.
+The choice is made according to adaptive Riemann solver
+using the PVRS, TRRS and TSRS approxiamet Riemann solvers. */
 int RiemannSolver::GuessPressure(double &p0)
 {
-	/* Purpose: to provide a guess value for pressure pS in the star region.
-	The choice is made according to adaptive Riemann solver
-	using the PVRS, TRRS and TSRS approxiamet Riemann solvers. */
 	double CUP, GEL, GER, uS, pmax, pmin, pPV, pQ, pTL, pTR, Qmax, Quser;
 	Quser = 2.0;
 	// Compute guess pressure from PVRS
@@ -114,10 +119,10 @@ int RiemannSolver::GuessPressure(double &p0)
 	return SUCCESS;
 }
 
+/* purpose: to evalute the pressure functions fL and fR in exact Riemann solver */
 int RiemannSolver::PreFunc(double &fK, double &dfK, const double p,
 		const double dK, const double pK, const double cK)
 {
-	// purpose: to evalute the pressure functions fL and fR in exact Riemann solver
 	double AK, BK, prat, qrt;
 	if (p <= pK)
 	{ // Rarefaction wave
@@ -136,12 +141,12 @@ int RiemannSolver::PreFunc(double &fK, double &dfK, const double p,
 	return SUCCESS;
 }
 
+/* sample the solution throughout the wave pattern. Pressure pS and velocity uS in the Star Region are known.
+Sampling is performed in terms of the ’speed’ S = x/t = 0.
+Sampled values are density, velocity and pressure.
+Denote S firstly refers to star region but finally refers to "solution".*/
 int RiemannSolver::Sampler()
 {
-	/* purpose: to sample the solution throughout the wave pattern. Pressure pS and velocity uS in the Star Region are known.
-	Sampling is performed in terms of the ’speed’ S = x/t = 0.
-	Sampled values are density, velocity and pressure.
-	Denote S firstly refers to star region but finally refers to "solution".*/
 	double uS, pS, cS;
 	double SHL, STL, SHR, STR, SL, SR;
 	double C, pSL, pSR;

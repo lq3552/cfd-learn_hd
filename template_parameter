@@ -23,7 +23,7 @@ StopTime = 0.25
 StopCycle = 1000000
 
 /* Output parameter */
-DataDump = output.txt
+DataDump = output
 dtDump = 0.01
 
 /* Top grid parameters */

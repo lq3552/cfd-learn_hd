@@ -1,9 +1,17 @@
 import numpy as np
+import sys
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 
 Gamma = 1.4
-data = np.loadtxt("output.txt")
+
+def load_data(filein = "output.txt"):
+	return np.loadtxt(filein)
+
+if(len(sys.argv) == 1):
+	data = load_data()
+else:
+	data = load_data(sys.argv[1])
 data2 = np.loadtxt("riemann.data")
 
 def Rescale(data):
@@ -37,4 +45,5 @@ for i in range(4):
 		ax.set_xlabel("Position")
 
 plt.subplots_adjust(hspace = 0)
-plt.savefig("test_output.png", dpi = 300)
+fileout = "test_output.png" if len(sys.argv) < 3 else sys.argv[2]
+plt.savefig(fileout, dpi = 300)
