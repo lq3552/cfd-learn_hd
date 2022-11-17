@@ -15,13 +15,12 @@ class Grid
 	
 		int SetBoundary(double *p, double *cs, double **U);
 		void SetGhostValue(int i, int i_bound, double *p, double *cs, double **U);
-		int HydroTimeStep(double dx, double time, double *cs, double &dt);
 		void SetMetaData(const int i_GridRank, const int i_GridDimension[], const int i_NumberofGhostZones, const int i_NumberofBaryonFields);
 	
 	public:
 		~Grid(); // free dynamically allocated space
-		void PrintMetaData();
-		int Output();
+		void PrintMetaData() const;
+		int Output(int, std::string = ".txt") const;
 
 		class GridInitializer;
 		class GodunovSolver;
@@ -54,7 +53,9 @@ class Grid::GodunovSolver // abstract class with at least one pure virtual metho
 		double **U; // volume-centered conserved quantities
 		double **F; // interface fluxes
 		double time, dx, dt;
+		double timeNextOutput;
 
+		double SetTimeStep() const;
 		int ComputeFlux();
 		virtual void ReconstructInterface(int, double* const, double&, int) = 0;
 		int UpdateState();
@@ -77,7 +78,7 @@ class Grid::GodunovSolverSecondOrder : public Grid::GodunovSolver
 {
 	protected:
 		inline double VanLeer(int i, double *q);
-		void ReconstructInterface(int i, double* const W, double &c, int);
+		void ReconstructInterface(int i, double* const W, double &c, int = 1);
 	public:
 		GodunovSolverSecondOrder(Grid &p_grid);
 };

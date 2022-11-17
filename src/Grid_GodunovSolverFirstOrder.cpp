@@ -9,7 +9,7 @@ Grid::GodunovSolverFirstOrder::GodunovSolverFirstOrder(Grid &grid) : Grid::Godun
 {
 }
 
-void Grid::GodunovSolverFirstOrder::ReconstructInterface(int i, double* const W, double& c, int sign = 1)
+void Grid::GodunovSolverFirstOrder::ReconstructInterface(int i, double* const W, double& c, int sign)
 {
 	W[0] = d[i];
 	W[1] = u[i];

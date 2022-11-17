@@ -47,8 +47,5 @@ int main(int argc, char *argv[])
 	if((godunov -> EvolveGodunov()!= SUCCESS))
 		RETURNFAIL("failed to evolve the grid!");
 
-	if (grid.Output() != SUCCESS)
-		RETURNFAIL("failed to output!");
-
 	return SUCCESS;
 }
