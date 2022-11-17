@@ -2,17 +2,22 @@
 
 #include "Global.h"
 
-int Grid::HydroTimeStep(double dx, double time, double *cs, double &dt)
+double Grid::GodunovSolver::SetTimeStep() const
 {
-	int i, size = GridDimension[0] + 2 * NumberofGhostZones;
+	int i, size = grid.GridDimension[0] + 2 * grid.NumberofGhostZones;
 	double Smax = TINY;
+	double dtTemp = -1.0;
+
 	if (Global::RiemannSolver == Types::RiemannType::EXACT)
 	{
 		for (i = 0; i < size; i++)
-			Smax = fmax(Smax, fabs(GridData[Types::Vel1Num][i]) + cs[i]);
-		dt = Global::CourantNumber * dx / Smax;
+			Smax = fmax(Smax, fabs(grid.GridData[Types::Vel1Num][i]) + cs[i]);
+		dtTemp = Global::CourantNumber * dx / Smax;
 	}
-	if (time + dt > Global::StopTime)
-		dt = Global::StopTime - time;
-	return SUCCESS;
+
+	double timeLimit = fmin(Global::StopTime, timeNextOutput);
+	if (time + dtTemp > timeLimit)
+		dtTemp = timeLimit - time;
+
+	return dtTemp;
 }

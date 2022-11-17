@@ -22,7 +22,7 @@ void Grid::SetMetaData(const int i_GridRank, const int i_GridDimension[], const 
 	NumberofBaryonFields = i_NumberofBaryonFields;
 }
 
-void Grid::PrintMetaData()
+void Grid::PrintMetaData() const
 {
 	std::cout << "/* Top grid */" << std::endl
 			  << "GridRank: " << GridRank << std::endl;
@@ -33,11 +33,13 @@ void Grid::PrintMetaData()
 			  << "NumberOfGhostZones: " << NumberofGhostZones << std::endl;
 }
 
-int Grid::Output()
+int Grid::Output(int outputNo, std::string suffix) const
 {
 	// need add a fieldtype identifier!!!!
 	std::fstream outputFile;
-	outputFile.open(Global::DataDump, std::fstream::out);
+	std::string no = std::to_string(outputNo);
+	no = std::string(4 - no.length(), '0') + no; 
+	outputFile.open(static_cast<std::string>(Global::DataDump) + no + suffix, std::fstream::out);
 	if (!outputFile)
 		RETURNFAIL("failed to create an output file");
 

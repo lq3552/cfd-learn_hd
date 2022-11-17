@@ -77,5 +77,9 @@ void Global::PrintGlobalParameter()
 			  << "/* Time step */" << std::endl
 			  << "CourantNumber: " << CourantNumber << std::endl
 			  << "StopTime: " << StopTime << std::endl
-			  << "StopCycle: " << StopCycle << std::endl;
+			  << "StopCycle: " << StopCycle << std::endl
+			  << "/* Output */" << std::endl
+			  << "DataDump: " << static_cast<std::string>(DataDump) << std::endl
+			  << "dtDump: " << dtDump << std::endl;
+
 }

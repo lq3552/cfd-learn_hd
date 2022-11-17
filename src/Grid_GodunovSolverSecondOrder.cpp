@@ -9,7 +9,7 @@ Grid::GodunovSolverSecondOrder::GodunovSolverSecondOrder(Grid &grid) : Grid::God
 {
 }
 
-void Grid::GodunovSolverSecondOrder::ReconstructInterface(int i, double* const W, double &c, int sign = 1)
+void Grid::GodunovSolverSecondOrder::ReconstructInterface(int i, double* const W, double &c, int sign)
 {
 	/* i-1 i i+1 */
 	/* <-a   a-> */

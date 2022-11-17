@@ -14,6 +14,7 @@ using namespace Types;
 Grid::GodunovSolver::GodunovSolver(Grid &grid) : grid(grid) 
 {
 	time = 0.0;
+	timeNextOutput = Global::dtDump;
 	dx = Global::LengthUnit / grid.GridDimension[0];
 
 	/* alias */
@@ -69,25 +70,35 @@ int Grid::GodunovSolver::EvolveGodunov()
 	/* First-order Godunov Solver, currently only 1st order, 1 D*/
 	if (gEOS(grid, p ,cs) != SUCCESS)
 		RETURNFAIL("unable to calculate p and cs from d and e!");
-	for (int i = 0; i < Global::StopCycle; i++)
+
+	int outputNo = 0;
+	for (int i = 0; fabs(time - Global::StopTime) > TINY && i < Global::StopCycle; i++)
 	{
 		/* Set boundary conditions */
 		if (grid.SetBoundary(p, cs, U) != SUCCESS)
 			RETURNFAIL("failed to apply boundary condition!");
+
 		/* CFL-based condition */
-		if (grid.HydroTimeStep(dx, time, cs, dt) != SUCCESS)
+		if ((dt = SetTimeStep()) < 0.0)
 			RETURNFAIL("failed to compute time step!");
 		time += dt;
-		std::cout << "cycle = " << (i + 1) << " dt = " << dt << " t = " << time << std::endl;
-		/* compute interface numerical fluxes */
+		//std::cout << "cycle = " << (i + 1) << " dt = " << dt << " t = " << time << std::endl;
+
+		/* compute interface numerical fluxes and update volume-centered quantities */
 		if (ComputeFlux() != SUCCESS)
 			RETURNFAIL("failed to compute time step!");
 		if (UpdateState() != SUCCESS)
 			RETURNFAIL("failed to update state!");
 		if (gEOS(grid, p ,cs) != SUCCESS)
 			RETURNFAIL("unable to calculate p and cs from d and e!");
-		if (fabs(time - Global::StopTime) < TINY)
-			break;
+
+		/* output*/
+		if (fabs(time - timeNextOutput) < TINY)
+		{
+			std::cout << outputNo << std::endl;
+			grid.Output(outputNo++);
+			timeNextOutput += Global::dtDump;
+		}
 	}
 
 	std::cout << "Computation complete!" << std::endl;
