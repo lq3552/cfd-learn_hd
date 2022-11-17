@@ -61,7 +61,7 @@ class Grid::GodunovSolver // abstract class with at least one pure virtual metho
 
 	public:
 		GodunovSolver(Grid &p_grid);
-		~GodunovSolver();
+		virtual ~GodunovSolver();
 		int EvolveGodunov();
 };
 

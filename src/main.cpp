@@ -2,6 +2,7 @@
    Author : Qi Li (pg3552@ufl.edu)
    create : Nov. 27, 2016 
    Update1: Oct. 16, 2017
+   Update2: Nov. 16, 2022 polymorphism
  */
 
 #include "Global.h"
@@ -29,19 +30,22 @@ int main(int argc, char *argv[])
 	if (Grid::GridInitializer(grid).TestInitialize(Global::ProblemType) != SUCCESS)
 		RETURNFAIL("failed to initialize problem!");
 
+	Grid::GodunovSolver *godunov;
 	switch (Global::Solver)
 	{
 		case Types::HydroType::HD_1ST: 
-			if (Grid::GodunovSolverFirstOrder(grid).EvolveGodunov() != SUCCESS)
-				RETURNFAIL("failure in first-order Godunov solver!");
+			if (!(godunov = new Grid::GodunovSolverFirstOrder(grid)))
+				RETURNFAIL("failed to initialize 1st-order Godunov solver!");
 			break;
 		case Types::HydroType::HD_2ND: 
-			if (Grid::GodunovSolverSecondOrder(grid).EvolveGodunov() != SUCCESS)
-				RETURNFAIL("failure in second-order Godunov solver!");
+			if (!(godunov = new Grid::GodunovSolverSecondOrder(grid)))
+				RETURNFAIL("failed to initialize 2nd-order Godunov solver!");
 			break;
 		default:
 			RETURNFAIL("unsupported solver!");
 	}
+	if((godunov -> EvolveGodunov()!= SUCCESS))
+		RETURNFAIL("failed to evolve the grid!");
 
 	if (grid.Output() != SUCCESS)
 		RETURNFAIL("failed to output!");

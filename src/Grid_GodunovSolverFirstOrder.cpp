@@ -1,9 +1,4 @@
-/* Evolve Euler equations with Godunov Upwind Scheme
-   written by: Qi Li
-   Version: 1.0
-	         -- pure-hydro, 1-D, unigrid
-	         -- in conjunction with exact riemman solver
-   create date: Nov 27, 2016 */
+/* PCM reconstruction */
 
 #include "Global.h"
 using namespace Types;

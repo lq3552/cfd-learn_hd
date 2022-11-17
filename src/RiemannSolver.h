@@ -3,14 +3,15 @@
    refactored on Oct. 8, 2022
    written by Qi Li
    Purpose: solve Local Riemman Problem of Euler Equations
-   Version:
-   1.0: 1D, pure hydro, exact Riemann solver (Nov. 27, 2016)
 */
+
+#ifndef RIEMANN_H
+#define RIEMANN_H
 
 class RiemannSolver
 {
 	private:
-		float G[8];
+		inline static float G[8];
 		const double dL, uL, pL, cL; // density, velocity, pressure, sound speed
 		const double dR, uR, pR, cR;
 		double* const WS; // star region primitives
@@ -25,4 +26,8 @@ class RiemannSolver
 		RiemannSolver(const double* const WL, const double cL,
 				const double* const WR, const double cR, double* const WS);
 		int RiemannExact();
+		static void ComputeGammaParam();
+		friend int SetParameter(Grid &grid, std::fstream& parameterFile);
 };
+
+#endif

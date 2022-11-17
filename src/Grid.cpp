@@ -1,3 +1,5 @@
+/* implementation of Grid class */
+
 #include "Global.h"
 using namespace Types;
 
@@ -35,7 +37,7 @@ int Grid::Output()
 {
 	// need add a fieldtype identifier!!!!
 	std::fstream outputFile;
-	outputFile.open("output.txt", std::fstream::out);
+	outputFile.open(Global::DataDump, std::fstream::out);
 	if (!outputFile)
 		RETURNFAIL("failed to create an output file");
 

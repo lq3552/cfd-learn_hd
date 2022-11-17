@@ -36,8 +36,8 @@ ifeq ($(SYSTYPE),"macintosh-monterey")
 else
   CXX = g++
   CC = gcc
-  OPTIMIZE = -Wall -g #study further
-  OPTION = -Wall -c
+  OPTIMIZE = -g #study further
+  OPTION = -Wall
 endif
 
 DUMMY := $(shell mkdir -p $(BUILD_DIR))
@@ -56,10 +56,10 @@ all: build
 build: $(EXE)
 
 $(EXE): $(OBJS)
-	$(CXX) $(STD) $(OPTIMIZE) $(OBJS) -o $(EXE)
+	$(CXX) $(STD) $(OPTION) $(OPTIMIZE) $(OBJS) -o $(EXE)
 
 $(BUILD_DIR)/%.o : $(SRC_DIR)/%.cpp $(INCL)
-	$(CXX) $(STD) $(OPTION) $< -o $@
+	$(CXX) $(STD) $(OPTION) $(OPTIMIZE) -c $< -o $@
 
 # show system information
 show-sys: $(SYSFILE)

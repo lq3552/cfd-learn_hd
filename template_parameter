@@ -7,13 +7,13 @@ TimeUnit = 1.0
 DensityUnit = 1.0
 
 /* Hydrodynamics parameter */
-Solver = 0
-RiemannSolver = 0
-RiemannIteration = 20
-BoundaryCondition = 1
+Solver = 1 # 0 - 1st order; 1 - 2nd order
+RiemannSolver = 0 # 0 - exact
+RiemannIteration = 20 
+BoundaryCondition = 1 # 1 - outflow
 
 /* Thermal dynamics parameter */
-EOSType = 1
+EOSType = 1 # 1 - ideal gas
 Gamma = 1.4
 Mu = 0.6
 
@@ -21,6 +21,10 @@ Mu = 0.6
 CourantNumber = 0.4
 StopTime = 0.25
 StopCycle = 1000000
+
+/* Output parameter */
+DataDump = output
+dtDump = 0.01
 
 /* Top grid parameters */
 GridRank = 1

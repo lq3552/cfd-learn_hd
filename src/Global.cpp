@@ -8,7 +8,8 @@ void Global::SetGlobalParameter(const int i_ProblemType,
 		                  const double i_LengthUnit, const double i_TimeUnit, const double i_DensityUnit,
 						  const HydroType i_Solver, const RiemannType i_RiemannSolver, const int i_RiemannIteration, const BoundaryType i_BoundaryCondition,
 						  const int i_EOSType, const float i_Gamma, const float i_Mu,
-						  const float i_CourantNumber, const double i_StopTime, const int i_StopCycle)
+						  const float i_CourantNumber, const double i_StopTime, const int i_StopCycle,
+						  const std::string i_DataDump, const double i_dtDump)
 {
 	ProblemType       = i_ProblemType;
 	LengthUnit        = i_LengthUnit;
@@ -23,6 +24,8 @@ void Global::SetGlobalParameter(const int i_ProblemType,
 	Mu                = i_Mu;
 	CourantNumber     = i_CourantNumber;
 	StopCycle         = i_StopCycle;
+	DataDump          = i_DataDump;
+	dtDump            = i_dtDump;
 	switch (i_ProblemType) // override StopTime from param file if a test problem is set
 	{
 		case 0:
@@ -43,6 +46,10 @@ void Global::SetGlobalParameter(const int i_ProblemType,
 		default:
 			StopTime = i_StopTime;
 			break;
+	}
+	if (dtDump < 0 || dtDump > StopTime)
+	{
+		dtDump = i_StopTime;
 	}
 }
 

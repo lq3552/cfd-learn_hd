@@ -16,6 +16,7 @@
 #include "Property.h"
 #include "typedefs.h"
 #include "Grid.h"
+#include "RiemannSolver.h"
 
 class Global
 {
@@ -45,7 +46,7 @@ class Global
 		inline static Property<int> StopCycle;
 
 		/* Output */
-		inline static Property<char>* DataDump; //prefix of output
+		inline static Property<std::string> DataDump; //prefix of output
 		inline static Property<double> dtDump; // cycle of output
 
 		static void PrintGlobalParameter();
@@ -55,7 +56,8 @@ class Global
 				                 const double i_LengthUnit, const double i_TimeUnit, const double i_DensityUnit,
 								 const Types::HydroType i_Solver, const Types::RiemannType i_RiemannSolver, const int i_RiemannIteration, const Types::BoundaryType i_BoundaryCondition,
 								 const int i_EOSType, const float i_Gamma, const float i_Mu,
-								 const float i_CourantNumber, const double i_StopTime, const int i_StopCycle);
+								 const float i_CourantNumber, const double i_StopTime, const int i_StopCycle,
+								 const std::string i_DataDump, const double i_dtDump);
 
 	friend int SetParameter(Grid &grid, std::fstream& parameterFile);
 };
