@@ -3,8 +3,6 @@
    refactored on Oct. 8, 2022
    written by Qi Li
    Purpose: solve Local Riemman Problem of Euler Equations
-   Version:
-   1.0: 1D, pure hydro, exact Riemann solver (Nov. 27, 2016)
 */
 
 #ifndef RIEMANN_H

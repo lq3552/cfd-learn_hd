@@ -1,8 +1,10 @@
 /* Implement class methods that can be inherited by 
    Godunov solvers with different orders
    written by: Qi Li
-   Version: 1.0
-   create date: Nov 27, 2016 */
+   Version: 2.0
+   create : Nov 27, 2016
+   update1: Nov 15, 2022 refactor with inheritance
+*/
 
 #include "Global.h"
 using namespace Types;

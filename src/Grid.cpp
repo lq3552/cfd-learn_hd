@@ -1,3 +1,5 @@
+/* implementation of Grid class */
+
 #include "Global.h"
 using namespace Types;
 
